@@ -25,16 +25,21 @@ def callback_id():
    max_id_length_entry = Entry(root)
    max_id_length_entry.grid(row=1, column=5)
 
-def callback_final():
-   if id_flag.get():
-     print('hello')
-     ids = id_generator()
-     print(ids)
+def callback_postcode():
+   global num_of_postcode
+   Label(root, text="Numebr of postcode ", font=('Century 10')).grid(row=2, column=2)
+   num_of_postcode = Entry(root)
+   num_of_postcode.grid(row=2, column=3)
 
-   num_rows = num_rows_entry.get()
-   min_id_length = min_id_length_entry.get()
-   max_id_length = max_id_length_entry.get()
-   print(num_rows, min_id_length, max_id_length)
+def callback_final():
+    if id_flag.get():
+        ids = id_generator()
+        print(ids)
+
+    if postcode_flag.get():
+        postcode = postcode_generator(int(num_of_postcode.get()))
+        print(postcode)
+
 
 # ID
 id_label = Label(root, text="ID: ", font=('Century 10 bold')).grid(row=1, column=0)
@@ -47,12 +52,22 @@ Radiobutton(root,
             command=callback_id).grid(row=1, column=1)
 
 
+# Postcode
+postcode_label = Label(root, text="Postcode: ", font=('Century 10 bold')).grid(row=2, column=0)
+postcode_flag = tk.IntVar()
+Radiobutton(root, 
+            text="Yes",
+            padx = 10, 
+            variable=postcode_flag, 
+            value=1,
+            command=callback_postcode).grid(row=2, column=1)
+
+
 
 
 #Create a Label and a Button widget
 btn=Button(root, text="Generate Data", command= callback_final)
 btn.grid(row=3, column=2)
 # btn.pack(ipadx=10)
-root.bind('<Return>',lambda event:callback_id())
 root.bind('<Return>',lambda event:callback_final())
 root.mainloop()
