@@ -1,5 +1,6 @@
 from tkinter import *
 import tkinter as tk
+from char import *
 
 root = Tk()
 #Set the geometry of tkinter frame
@@ -25,6 +26,11 @@ def callback_id():
    max_id_length_entry.grid(row=1, column=5)
 
 def callback_final():
+   if id_flag.get():
+     print('hello')
+     ids = id_generator()
+     print(ids)
+
    num_rows = num_rows_entry.get()
    min_id_length = min_id_length_entry.get()
    max_id_length = max_id_length_entry.get()
@@ -40,9 +46,8 @@ Radiobutton(root,
             value=1,
             command=callback_id).grid(row=1, column=1)
 
-# if id_flag.get():
-#    ids = id_generator()
-#    print(ids)
+
+
 
 #Create a Label and a Button widget
 btn=Button(root, text="Generate Data", command= callback_final)
