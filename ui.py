@@ -64,7 +64,11 @@ def callback_final():
 
         # Read pattern input and convert to list of character types
         pattern_input = pattern_entry.get()
-        pattern = [{'l': 'letter', 'd': 'digit', 'n': None}.get(char) for char in pattern_input]
+        pattern = ''
+        if pattern_input:
+            pattern = [{'l': 'letter', 'd': 'digit'}.get(char) for char in pattern_input]
+        else:
+            pattern = [None] * length
 
         generated_strings = generate_random_strings(length=length, pattern=pattern, num_strings=num_strings)
         print(generated_strings)
