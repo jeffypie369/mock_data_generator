@@ -1,5 +1,8 @@
+# TODO: Account for composite keys
+# TODO: Add one more language/region for more "realistic" data. French? https://faker.readthedocs.io/en/master/locales/fr_FR.html#
+# TODO: Add foreign key question when it is not the first table
 def main():
-    num_rows = input("How many rows of data do you need? Min: 1, Max: 10000\n")
+    num_rows = input("How many rows of data do you need? Min: 1, Max: 10000\n") # Put this later under each table
     num_tables = input("How many tables do you need?\n")
     
     tables_dict = {}
@@ -10,13 +13,13 @@ def main():
         tables_dict[table_name] = {}
 
         # Entities
-        num_entities = input("How many entities for " + table_name + "?\n")
+        num_entities = input("How many columns for " + table_name + "?\n")
         for j in range(int(num_entities)):
-            entity = input("What is the name of entity " + str(j+1) + "?\n")
+            entity = input("What is the name of column " + str(j+1) + "?\n")
             tables_dict[table_name][entity] = {}
             entity_type = input("Is " + entity + " one of the known types in the following list?\n[name, address, email, postcode, age, id]\nIf yes, input the type. If no, input 'n'\n")
             if entity_type == 'n':
-                entity_type_and_length = input("Input type and length in the format TYPE(LENGTH), e.g. VARCHAR(64):\n")
+                entity_type_and_length = input("Input type and length in the format TYPE(LENGTH), e.g. VARCHAR(64):\n") # TODO: Can list available types
                 entity_type, entity_length = entity_type_and_length.split("(")
                 entity_length = entity_length[:-1]
                 tables_dict[table_name][entity]["length"] = entity_length
@@ -32,6 +35,7 @@ def main():
                     tables_dict[table_name][entity]["is_unique"] = True
             selectivity = input("Input selectivity, where 0 <= selectivity <= 1. Input 0 for no selectivity constraint:\n")
             tables_dict[table_name][entity]["selectivity"] = selectivity
+            # TODO: shift nonequalities to specific type constraints
             nonequalities = input("Input non-equalities separated by commas (e.g. Donald Duck, Mickey Mouse, Minnie Mouse). If none, input 'n':\n")
             nonequalities = nonequalities.split(",")
             nonequalities = [val.strip() for val in nonequalities]
@@ -43,19 +47,15 @@ def main():
 
             # Datetime-specific Constraints
 
+        # Intra-table Constraints (FDs within table)
+        # TODO: Generating data
+        ## ==> Determine order of column creations based on FDs
+        ## ==> Selectivity of RHS may get overridden
 
-        # Intra-table Constraints
-
-    # Inter-table Constraints
+    # Inter-table Constraints (FDs across tables)
 
     print(num_rows)
     print(tables_dict)
 
 if __name__ == "__main__":
     main()
-
-
-# entities = input("Input the entities of " + table_name + " separated by commas (e.g. name, student_id, email):\n")
-        # entities = entities.split(",")
-        # entities = [ent.strip() for ent in entities]
-        # entities_dict[table_name] = entities
