@@ -1,6 +1,6 @@
-# TODO: Account for composite keys
-# TODO: Add one more language/region for more "realistic" data. French? https://faker.readthedocs.io/en/master/locales/fr_FR.html#
-# TODO: Add foreign key question when it is not the first table
+# TODO: Account for composite keys (Jeff)
+# TODO: Add one more language/region for more "realistic" data. French? https://faker.readthedocs.io/en/master/locales/fr_FR.html# (Jeff)
+# TODO: Add foreign key question when it is not the first table (Jeff)
 def main():
     num_rows = input("How many rows of data do you need? Min: 1, Max: 10000\n") # Put this later under each table
     num_tables = input("How many tables do you need?\n")
@@ -41,14 +41,14 @@ def main():
             nonequalities = [val.strip() for val in nonequalities]
             tables_dict[table_name][entity]["nonequalities"] = nonequalities
 
-            # CHAR-specific Constraints
+            # CHAR-specific Constraints (Xu Zeng)
             
-            # INT/FLOAT-specific Constraints
+            # INT/FLOAT-specific Constraints (Amanda)
 
-            # Datetime-specific Constraints
+            # Datetime-specific Constraints (Kenny)
 
         # Intra-table Constraints (FDs within table)
-        # TODO: Generating data
+        # TODO: Generating data (Kenny)
         ## ==> Determine order of column creations based on FDs
         ## ==> Selectivity of RHS may get overridden
 
