@@ -19,12 +19,7 @@ def main():
             tables_dict[table_name][entity] = {}
             entity_type = input("Is " + str.upper(entity) + " one of the known types in the following list?\n[name, address, email, id, postcode, card_num, isbn]\nIf yes, input the type. If no, input 'n'\n")
             if entity_type == 'n':
-                # entity_type_and_length = input("Input type and length in the format TYPE(LENGTH), e.g. VARCHAR(64):\n") # TODO: Can list available types
-                # *** shift length to specific type constraint bc not relevant to numeric
                 entity_type = input("Choose datatype of " + str.upper(entity) + ":\n- For character values, input 'char'.\n- For numeric values, input 'num'.\n- For date/time values, input 'dt'.\n")
-                # entity_type, entity_length = entity_type_and_length.split("(")
-                # entity_length = entity_length[:-1]
-                # tables_dict[table_name][entity]["length"] = entity_length
             tables_dict[table_name][entity]["type"] = entity_type
 
             # General Constraints
@@ -54,6 +49,18 @@ def main():
                 if entity_type == 'id' or entity_type == 'name' or entity_type == 'address' or entity_type == 'email':
                     max_length = input("What is the maximum length of " + str.upper(entity) + "?\n")
                     tables_dict[table_name][entity]["max_length"] = int(max_length)
+            
+            if entity_type == 'char':
+                length = input("What is the length of " + str.upper(entity) + "?\n")
+                pattern = input("Input the pattern for " + str.upper(entity) + ".\nUse 'l' for letters, 'd' for digits, and 'x' for any character. (e.g. lddxx): \n")
+                selectivity = input("Input selectivity, where 0 <= selectivity <= 1. Input 0 for no selectivity constraint:\n")
+                exclude_list = input("Input any values in your defined range that you want to exclude.\nSeparate them by commas (e.g. abc, 123).\nIf none, input 'n':\n")
+                exclude_list = exclude_list.split(",")
+                exclude_list = [val.strip() for val in exclude_list]
+                tables_dict[table_name][entity]["exclude_list"] = exclude_list
+                tables_dict[table_name][entity]["length"] = int(length)
+                tables_dict[table_name][entity]["pattern"] = list(pattern)
+                tables_dict[table_name][entity]["selectivity"] = float(selectivity)
             
             # INT/FLOAT-specific Constraints (Amanda)
             
