@@ -40,12 +40,10 @@ def main():
 
             # CHAR-specific Constraints (Xu Zeng)
             if entity_type == 'postcode' or  entity_type == 'card_num' or  entity_type == 'isbn' or entity_type == 'id' or entity_type == 'name' or entity_type == 'address' or entity_type == 'email':
-                selectivity = input("Input selectivity, where 0 <= selectivity <= 1. Input 0 for no selectivity constraint:\n")
                 exclude_list = input("Input any values in your defined range that you want to exclude.\nSeparate them by commas (e.g. E1W 3TJ, SW1A 1AA).\nIf none, input 'n':\n")
                 exclude_list = exclude_list.split(",")
                 exclude_list = [val.strip() for val in exclude_list]
                 tables_dict[table_name][entity]["exclude_list"] = exclude_list
-                tables_dict[table_name][entity]["selectivity"] = float(selectivity)
                 if entity_type == 'id' or entity_type == 'name' or entity_type == 'address' or entity_type == 'email':
                     max_length = input("What is the maximum length of " + str.upper(entity) + "?\n")
                     tables_dict[table_name][entity]["max_length"] = int(max_length)
@@ -53,14 +51,12 @@ def main():
             if entity_type == 'char':
                 length = input("What is the length of " + str.upper(entity) + "?\n")
                 pattern = input("Input the pattern for " + str.upper(entity) + ".\nUse 'l' for letters, 'd' for digits, and 'x' for any character. (e.g. lddxx): \n")
-                selectivity = input("Input selectivity, where 0 <= selectivity <= 1. Input 0 for no selectivity constraint:\n")
                 exclude_list = input("Input any values in your defined range that you want to exclude.\nSeparate them by commas (e.g. abc, 123).\nIf none, input 'n':\n")
                 exclude_list = exclude_list.split(",")
                 exclude_list = [val.strip() for val in exclude_list]
                 tables_dict[table_name][entity]["exclude_list"] = exclude_list
                 tables_dict[table_name][entity]["length"] = int(length)
                 tables_dict[table_name][entity]["pattern"] = list(pattern)
-                tables_dict[table_name][entity]["selectivity"] = float(selectivity)
             
             # INT/FLOAT-specific Constraints (Amanda)
             
