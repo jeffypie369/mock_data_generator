@@ -17,7 +17,7 @@ def main():
         for j in range(int(num_entities)):
             entity = input("What is the name of column " + str(j+1) + "?\n")
             tables_dict[table_name][entity] = {}
-            entity_type = input("Is " + str.upper(entity) + " one of the known types in the following list?\n[name, address, email, postcode, age, id]\nIf yes, input the type. If no, input 'n'\n")
+            entity_type = input("Is " + str.upper(entity) + " one of the known types in the following list?\n[name, address, email, id, postcode, card_num, isbn]\nIf yes, input the type. If no, input 'n'\n")
             if entity_type == 'n':
                 # entity_type_and_length = input("Input type and length in the format TYPE(LENGTH), e.g. VARCHAR(64):\n") # TODO: Can list available types
                 # *** shift length to specific type constraint bc not relevant to numeric
@@ -44,6 +44,13 @@ def main():
             # tables_dict[table_name][entity]["exclusion"] = exclusion
 
             # CHAR-specific Constraints (Xu Zeng)
+            if entity_type == 'postcode' or  entity_type == 'card_num' or  entity_type == 'isbn':
+                selectivity = input("Input selectivity, where 0 <= selectivity <= 1. Input 0 for no selectivity constraint:\n")
+                exclude_list = input("Input any values in your defined range that you want to exclude.\nSeparate them by commas (e.g. E1W 3TJ, SW1A 1AA).\nIf none, input 'n':\n")
+                exclude_list = exclude_list.split(",")
+                exclude_list = [val.strip() for val in exclude_list]
+                tables_dict[table_name][entity]["exclude_list"] = exclude_list
+                tables_dict[table_name][entity]["selectivity"] = float(selectivity)
             
             # INT/FLOAT-specific Constraints (Amanda)
             
