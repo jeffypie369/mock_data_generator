@@ -10,7 +10,7 @@ def main():
         # Table
         table_name = input("Input the name of Table " + str(i+1) + ":\n")
         tables_dict[table_name] = {}
-        num_rows = input("How many rows of data do you need for " + table_name + "? Min: 1, Max: 10000\n")
+        num_rows = input("How many rows of data do you need for " + str.upper(table_name) + "? Min: 1, Max: 10000\n")
         tables_dict[table_name]["num_rows"] = num_rows
 
         # Entities
