@@ -37,11 +37,6 @@ def main():
 
             selectivity = input("Input selectivity, where 0 <= selectivity <= 1. Input 0 for no selectivity constraint:\n")
             tables_dict[table_name][entity]["selectivity"] = float(selectivity)
-            # TODO: shift exclusion to specific type constraints
-            # exclusion = input("Input any values in your defined range that you want to exclude.\nSeparate them by commas (e.g. Donald Duck, Mickey Mouse, Minnie Mouse).\nIf none, input 'n':\n")
-            # exclusion = exclusion.split(",")
-            # exclusion = [val.strip() for val in exclusion]
-            # tables_dict[table_name][entity]["exclusion"] = exclusion
 
             # CHAR-specific Constraints (Xu Zeng)
             if entity_type == 'postcode' or  entity_type == 'card_num' or  entity_type == 'isbn' or entity_type == 'id' or entity_type == 'name' or entity_type == 'address' or entity_type == 'email':
@@ -112,10 +107,10 @@ def main():
             if has_foreign_key == 'y':
                 tables_dict[table_name]["foreign_keys"] = []
                 num_foreign_keys = input("How many foreign keys are there?\n")
-                for k in num_foreign_keys:
+                for k in range(num_foreign_keys):
                     foreign_key = input("Input the foreign table and column of the foreign key in the format TABLE.COLUMN (e.g., Student.student_id):\n")
                     foreign_table, foreign_key = foreign_key.split('.')
-                    foreign_key_tup = (foreign_table, foreign_key)
+                    foreign_key_tup = (str.upper(foreign_table), foreign_key)
                     tables_dict[table_name]["foreign_keys"].append(foreign_key_tup)
 
         # Intra-table Constraints (FDs within table)
@@ -123,7 +118,7 @@ def main():
         ## ==> Determine order of column creations based on FDs
         ## ==> Selectivity of RHS may get overridden
 
-    # Inter-table Constraints (FDs across tables)
+        # Inter-table Constraints (Foreign Keys)
 
     print(num_rows)
     print(tables_dict)
