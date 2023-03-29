@@ -43,10 +43,10 @@ def main():
                 exclude_list = input("Input any values in your defined range that you want to exclude.\nSeparate them by commas (e.g. E1W 3TJ, SW1A 1AA).\nIf none, input 'n':\n")
                 exclude_list = exclude_list.split(",")
                 exclude_list = [val.strip() for val in exclude_list]
-                tables_dict[table_name][entity]["exclude_list"] = exclude_list
+                tables_dict[table_name][entity]["exclusion"] = exclude_list
                 if entity_type == 'id' or entity_type == 'name' or entity_type == 'address' or entity_type == 'email':
                     max_length = input("What is the maximum length of " + str.upper(entity) + "?\n")
-                    tables_dict[table_name][entity]["max_length"] = int(max_length)
+                    tables_dict[table_name][entity]["max"] = int(max_length)
             
             if entity_type == 'char':
                 length = input("What is the length of " + str.upper(entity) + "?\n")
@@ -54,7 +54,7 @@ def main():
                 exclude_list = input("Input any values in your defined range that you want to exclude.\nSeparate them by commas (e.g. abc, 123).\nIf none, input 'n':\n")
                 exclude_list = exclude_list.split(",")
                 exclude_list = [val.strip() for val in exclude_list]
-                tables_dict[table_name][entity]["exclude_list"] = exclude_list
+                tables_dict[table_name][entity]["exclusion"] = exclude_list
                 tables_dict[table_name][entity]["length"] = int(length)
                 tables_dict[table_name][entity]["pattern"] = list(pattern)
             
