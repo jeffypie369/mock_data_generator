@@ -1,21 +1,33 @@
 # TODO: Account for composite keys (Jeff) - Done
 # TODO: Add one more language/region for more "realistic" data. French? https://faker.readthedocs.io/en/master/locales/fr_FR.html# (Jeff)
 # TODO: Add foreign key question when it is not the first table (Jeff) - Done
+
+def reinput():
+    value = input("You have provided an incorrect input. Please try again:\n")
+    return value
+
 def main():
+    invalid_characters = "\"!@#$%^&*()-+?_=,<>/1234567890"
     num_tables = input("How many tables do you need?\n")
+    while not num_tables.isnumeric(): # Only numbers
+        num_tables = reinput()
     
     tables_dict = {}
 
     for i in range(int(num_tables)):
         # Table
         table_name = input("Input the name of Table " + str(i+1) + ":\n")
+        while any(c in table_name for c in invalid_characters): # Only word characters
+            table_name = reinput()
         tables_dict[table_name] = {}
         num_rows = input("How many rows of data do you need for " + str.upper(table_name) + "? Min: 1, Max: 10000\n")
+        while not num_rows.isnumeric(): # Only numbers
+            num_rows = reinput()
         tables_dict[table_name]["num_rows"] = num_rows
 
         # Entities
         if i == 0:
-            num_entities = input("How many columns for " + str.upper(table_name) + "?\n")    
+            num_entities = input("How many columns for " + str.upper(table_name) + "?\n")
         else:
             num_entities = input("How many columns for " + str.upper(table_name) + " not counting foreign keys?\n")
         for j in range(int(num_entities)):
