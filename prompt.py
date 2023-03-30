@@ -59,6 +59,9 @@ def main():
                 if entity_type == 'id' or entity_type == 'name' or entity_type == 'address' or entity_type == 'email':
                     max_length = input("What is the maximum length of " + str.upper(entity) + "?\n")
                     tables_dict[table_name][entity]["max"] = int(max_length)
+                    if entity_type == 'id':
+                        min_length = input("What is the minimum length of " + str.upper(entity) + "?\n")
+                        tables_dict[table_name][entity]["min"] = int(min_length)
             
             if entity_type == 'char':
                 length = input("What is the length of " + str.upper(entity) + "?\n")
@@ -111,6 +114,38 @@ def main():
 
 
             # Datetime-specific Constraints (Kenny)
+            if entity_type == 'dt':
+                datetime_type = input("Does " + str.upper(entity) + " contain only the date or time, or both?\nIf only date, input 'd'. If only time, input 't'.\nIf both, input 'dt'.\n")
+
+            if datetime_type == 'd':
+                minimum = input("What is the lower bound of date allowed for " + str.upper(entity) + "? Please input using this format: YY, MM, DD (e.g. for 15 March 2023, input 15, 3, 2023)\n")
+                minimum = minimum.split(",")
+                minimum = [int(val.strip()) for val in minimum]
+                tables_dict[table_name][entity]["min"] = int(minimum)
+                maximum = input("What is the upper bound of date allowed for " + str.upper(entity) + "? Please input using this format: YY, MM, DD (e.g. for 15 March 2023, input 15, 3, 2023)\n")
+                maximum = maximum.split(",")
+                maximum = [int(val.strip()) for val in maximum]
+                tables_dict[table_name][entity]["max"] = int(maximum)
+
+            elif datetime_type == 't':
+                minimum = input("What is the lower bound of time allowed for " + str.upper(entity) + "? Please input using this format (24HR): hh, mm, ss (e.g. for 3:55:29pm, input 15, 55, 29)\n")
+                minimum = minimum.split(",")
+                minimum = [int(val.strip()) for val in minimum]
+                tables_dict[table_name][entity]["min"] = int(minimum)
+                maximum = input("What is the upper bound of time allowed for " + str.upper(entity) + "? Please input using this format (24HR): hh, mm, ss (e.g. for 3:55:29pm, input 15, 55, 29)\n")
+                maximum = maximum.split(",")
+                maximum = [int(val.strip()) for val in maximum]
+                tables_dict[table_name][entity]["max"] = int(maximum)
+
+            elif datetime_type == 'dt':
+                minimum = input("What is the lower bound of datetime allowed for " + str.upper(entity) + "? Please input using this format (24HR): YY, MM, DD, hh, mm, ss (e.g. for 14 February 1999, 6:25:30pm, input 14, 2, 1999, 18, 25, 30)\n")
+                minimum = minimum.split(",")
+                minimum = [int(val.strip()) for val in minimum]
+                tables_dict[table_name][entity]["min"] = int(minimum)
+                maximum = input("What is the upper bound of datetime allowed for " + str.upper(entity) + "? Please input using this format (24HR): YY, MM, DD, hh, mm, ss (e.g. for 14 February 1999, 6:25:30pm, input 14, 2, 1999, 18, 25, 30)\n")
+                maximum = maximum.split(",")
+                maximum = [int(val.strip()) for val in maximum]
+                tables_dict[table_name][entity]["max"] = int(maximum)
 
                 
         # Foreign Key Constraint
