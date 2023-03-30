@@ -47,6 +47,9 @@ def main():
                 if entity_type == 'id' or entity_type == 'name' or entity_type == 'address' or entity_type == 'email':
                     max_length = input("What is the maximum length of " + str.upper(entity) + "?\n")
                     tables_dict[table_name][entity]["max"] = int(max_length)
+                    if entity_type == 'id':
+                        min_length = input("What is the minimum length of " + str.upper(entity) + "?\n")
+                        tables_dict[table_name][entity]["min"] = int(min_length)
             
             if entity_type == 'char':
                 length = input("What is the length of " + str.upper(entity) + "?\n")
