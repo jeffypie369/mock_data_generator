@@ -30,7 +30,8 @@ def main():
         num_rows = input("How many rows of data do you need for " + str.upper(table_name) + "? Min: 1, Max: 10000\n")
         while not num_rows.isnumeric(): # Only numbers
             num_rows = reinput()
-        tables_dict[table_name]["num_rows"] = num_rows
+        tables_dict[table_name]["num_rows"] = int(num_rows)
+        tables_dict[table_name]["entity_list"] = list()
 
         # Entities
         if i == 0:
@@ -209,8 +210,117 @@ def main():
                     foreign_key_tup = (str.upper(foreign_table), foreign_key)
                     tables_dict[table_name]["foreign_keys"].append(foreign_key_tup)
 
-        # Intra-table Constraints (FDs within table)
         # TODO: Generating data (Kenny)
+        # Implementation does not consider FD constraints
+        ### if fd_list is None
+        output_list = list()
+        for indiv_entity in tables_dict[table_name]["entity_list"]:
+            if (indiv_entity["type"] == 'postcode'):
+                # requires import from jeff's code
+                output_list.append(postcode_generator(num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
+            elif (indiv_entity["type"] == 'card_num'):
+                output_list.append(credit_card_number_generator(num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
+            elif (indiv_entity["type"] == 'isbn'):
+                output_list.append(isbn_generator(num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
+            elif (indiv_entity["type"] == 'id'):
+                output_list.append(id_generator(min=tables_dict[table_name][indiv_entity]["min"], max=tables_dict[table_name][indiv_entity]["max"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], num_rows=tables_dict[table_name]["num_rows"]))
+            elif (indiv_entity["type"] == 'name'):
+                output_list.append(name_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
+            elif (indiv_entity["type"] == 'address'):
+                output_list.append(address_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
+            elif (indiv_entity["type"] == 'email'):
+                output_list.append(email_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
+            elif (indiv_entity["type"] == 'char'):
+                output_list.append(generate_random_strings(length=tables_dict[table_name][indiv_entity]["length"], pattern=tables_dict[table_name][indiv_entity]["pattern"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
+            elif (indiv_entity["type"] == 'num'):
+                if (indiv_entity["num_type"] == 'i'):
+                    output_list.append(int_generator(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], unique=False, selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
+                elif (indiv_entity["num_type"] == 'f'):
+                    if (indiv_entity["distribution"] == 'n'):
+                        output_list.append(float_generator_normal(float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], decimals=tables_dict[table_name][indiv_entity]["decimals"])))
+                    # elif (indiv_entity["distribution"] == 'p'):
+                        # output_list.append()
+                    else:
+                        output_list.append(float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
+
+            elif (indiv_entity["type"] == 'dt'):
+                if (indiv_entity["dt_type"] == 'd'):
+                    output_list.append(generate_date(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
+                elif (indiv_entity["dt_type"] == 't'):
+                    output_list.append(generate_time(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
+                elif (indiv_entity["dt_type"] == 'dt'):    
+                    output_list.append(generate_datetime(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
+        # to import csv
+        myFile = open('realistic_data_generator.csv', 'w')
+        writer = csv.writer(myFile)
+        writer.writerow(tables_dict[table_name]["entity_list"])
+        for list_index in range(len(int(num_rows))):
+            temp_row = list()
+            for entity_index in range(len(tables_dict[table_name]["entity_list"])):
+                temp_row.append(output_list[entity_index][list_index])
+            writer.writerow(temprow)
+        myFile.close()
+
+        # ### if fd_list is not None
+        # output_list = list()
+        # dependency_dict = {}
+        # temp_dependency_dict = {}
+        # for fd in fd_list:
+        #     dependency_dict[fd] = {}
+            
+        # for row_index in range(int(num_rows)):
+        #     temp_dependency_dict = {}
+        #     for fd in fd_list:
+        #         temp_dependency_dict[fd] = {}
+        #         temp_row = list()
+        #         lhs_temp = list()
+        #         rhs_temp = list()
+        #         for indiv_entity in tables_dict[table_name]["entity_list"]:
+        #             if (indiv_entity["type"] == 'postcode'):
+        #                 # requires import from jeff's code
+        #                 data_generated = postcode_generator(num_rows=1, selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+        #             elif (indiv_entity["type"] == 'card_num'):
+        #                 data_generated = credit_card_number_generator(num_rows=1, selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+        #             elif (indiv_entity["type"] == 'isbn'):
+        #                 data_generated = isbn_generator(num_rows=1, selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+        #             elif (indiv_entity["type"] == 'id'):
+        #                 data_generated = id_generator(min=tables_dict[table_name][indiv_entity]["min"], max=tables_dict[table_name][indiv_entity]["max"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], num_rows=1)
+        #             elif (indiv_entity["type"] == 'name'):
+        #                 data_generated = name_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=1, selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+        #             elif (indiv_entity["type"] == 'address'):
+        #                 data_generated = address_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=1, selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+        #             elif (indiv_entity["type"] == 'email'):
+        #                 data_generated = email_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=1, selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+        #             elif (indiv_entity["type"] == 'char'):
+        #                 data_generated = generate_random_strings(length=tables_dict[table_name][indiv_entity]["length"], pattern=tables_dict[table_name][indiv_entity]["pattern"], num_rows=1, selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+        #             elif (indiv_entity["type"] == 'num'):
+        #                 if (indiv_entity["num_type"] == 'i'):
+        #                     data_generated = int_generator_single(tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+        #                 elif (indiv_entity["num_type"] == 'f'):
+        #                     if (indiv_entity["distribution"] == 'n'):
+        #                         data_generated = float_generator_single(tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], distribution='normal', exclusion=exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+        #                     else:
+        #                         data_generated = float_generator_single(tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], distribution='uniform', exclusion=exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+        #             elif (indiv_entity["type"] == 'dt'):
+        #                 if (indiv_entity["dt_type"] == 'd'):
+        #                     data_generated = generate_date(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=1, exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
+        #                 elif (indiv_entity["dt_type"] == 't'):
+        #                     data_generated = generate_time(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=1, exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
+        #                 elif (indiv_entity["dt_type"] == 'dt'):    
+        #                     data_generated = generate_datetime(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=1, exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
+        #             if indiv_entity in fd[0]:
+        #                 lhs_temp.append(data_generated)
+        #             if indiv_entity in fd[1]:
+        #                 rhs_temp.append(data_generated)
+        #             temp_row.append(data_generated)
+
+        #         if (dependency_dict[fd][lhs_temp] is None and temp_dependency_dict[fd][lhs_temp] is None):
+        #             temp_dependency_dict[fd][lhs_temp] = rhs_temp
+        #         else:
+        #             if (dependency_dict[fd][lhs_temp] == rhs_temp or temp_dependency_dict[fd][lhs_temp] == rhs_temp):
+        #                 temp_dependency_dict[fd][lhs_temp] = rhs_temp
+        #             else:
+        #                 break
         ## ==> Determine order of column creations based on FDs
         ## ==> Selectivity of RHS may get overridden
 
