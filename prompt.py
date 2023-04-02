@@ -18,7 +18,7 @@ def isfloat(num):
         return False
 
 def main():
-    invalid_characters = "\"!@#$%^&*()-+?=,<>/1234567890"
+    invalid_characters = "\"!@#$%^&*()+?=,<>/1234567890"
     num_tables = input("How many tables do you need?\n")
     while not num_tables.isnumeric(): # Only numbers
         num_tables = reinput()
