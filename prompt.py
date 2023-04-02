@@ -2,6 +2,10 @@
 # TODO: Add one more language/region for more "realistic" data. French? https://faker.readthedocs.io/en/master/locales/fr_FR.html# (Jeff)
 # TODO: Add foreign key question when it is not the first table (Jeff) - Done
 
+import csv
+import pandas as pd
+from functions import *
+
 def reinput():
     value = input("You have provided an incorrect input. Please try again:\n")
     return value
@@ -14,7 +18,7 @@ def isfloat(num):
         return False
 
 def main():
-    invalid_characters = "\"!@#$%^&*()-+?_=,<>/1234567890"
+    invalid_characters = "\"!@#$%^&*()-+?=,<>/1234567890"
     num_tables = input("How many tables do you need?\n")
     while not num_tables.isnumeric(): # Only numbers
         num_tables = reinput()
@@ -45,6 +49,7 @@ def main():
             while any(c in invalid_characters for c in entity): # Only word characters
                 entity = reinput()
             tables_dict[table_name][entity] = {}
+            tables_dict[table_name]["entity_list"].append(entity)
             entity_type = input("Is " + str.upper(entity) + " one of the known types in the following list?\n[name, address, email, id, postcode, card_num, isbn]\nIf yes, input the type. If no, input 'n'\n")
             if entity_type == 'n':
                 entity_type = input("Choose datatype of " + str.upper(entity) + ":\n- For character values, input 'char'.\n- For numeric values, input 'num'.\n- For date/time values, input 'dt'.\n")
@@ -160,38 +165,38 @@ def main():
             # Datetime-specific Constraints (Kenny)
             if entity_type == 'dt':
                 datetime_type = input("Does " + str.upper(entity) + " contain only the date or time, or both?\nIf only date, input 'd'. If only time, input 't'.\nIf both, input 'dt'.\n")
-            while not any(c in "dt" for c in datetime_type): # Only d or t
-                        datetime_type = reinput()
+                while not any(c in "dt" for c in datetime_type): # Only d or t
+                            datetime_type = reinput()
 
-            if datetime_type == 'd':
-                minimum = input("What is the lower bound of date allowed for " + str.upper(entity) + "? Please input using this format: YY, MM, DD (e.g. for 15 March 2023, input 15, 3, 2023)\n")
-                minimum = minimum.split(",")
-                minimum = [int(val.strip()) for val in minimum]
-                tables_dict[table_name][entity]["min"] = int(minimum)
-                maximum = input("What is the upper bound of date allowed for " + str.upper(entity) + "? Please input using this format: YY, MM, DD (e.g. for 15 March 2023, input 15, 3, 2023)\n")
-                maximum = maximum.split(",")
-                maximum = [int(val.strip()) for val in maximum]
-                tables_dict[table_name][entity]["max"] = int(maximum)
+                if datetime_type == 'd':
+                    minimum = input("What is the lower bound of date allowed for " + str.upper(entity) + "? Please input using this format: YY, MM, DD (e.g. for 15 March 2023, input 15, 3, 2023)\n")
+                    minimum = minimum.split(",")
+                    minimum = [int(val.strip()) for val in minimum]
+                    tables_dict[table_name][entity]["min"] = int(minimum)
+                    maximum = input("What is the upper bound of date allowed for " + str.upper(entity) + "? Please input using this format: YY, MM, DD (e.g. for 15 March 2023, input 15, 3, 2023)\n")
+                    maximum = maximum.split(",")
+                    maximum = [int(val.strip()) for val in maximum]
+                    tables_dict[table_name][entity]["max"] = int(maximum)
 
-            elif datetime_type == 't':
-                minimum = input("What is the lower bound of time allowed for " + str.upper(entity) + "? Please input using this format (24HR): hh, mm, ss (e.g. for 3:55:29pm, input 15, 55, 29)\n")
-                minimum = minimum.split(",")
-                minimum = [int(val.strip()) for val in minimum]
-                tables_dict[table_name][entity]["min"] = int(minimum)
-                maximum = input("What is the upper bound of time allowed for " + str.upper(entity) + "? Please input using this format (24HR): hh, mm, ss (e.g. for 3:55:29pm, input 15, 55, 29)\n")
-                maximum = maximum.split(",")
-                maximum = [int(val.strip()) for val in maximum]
-                tables_dict[table_name][entity]["max"] = int(maximum)
+                elif datetime_type == 't':
+                    minimum = input("What is the lower bound of time allowed for " + str.upper(entity) + "? Please input using this format (24HR): hh, mm, ss (e.g. for 3:55:29pm, input 15, 55, 29)\n")
+                    minimum = minimum.split(",")
+                    minimum = [int(val.strip()) for val in minimum]
+                    tables_dict[table_name][entity]["min"] = int(minimum)
+                    maximum = input("What is the upper bound of time allowed for " + str.upper(entity) + "? Please input using this format (24HR): hh, mm, ss (e.g. for 3:55:29pm, input 15, 55, 29)\n")
+                    maximum = maximum.split(",")
+                    maximum = [int(val.strip()) for val in maximum]
+                    tables_dict[table_name][entity]["max"] = int(maximum)
 
-            elif datetime_type == 'dt':
-                minimum = input("What is the lower bound of datetime allowed for " + str.upper(entity) + "? Please input using this format (24HR): YY, MM, DD, hh, mm, ss (e.g. for 14 February 1999, 6:25:30pm, input 14, 2, 1999, 18, 25, 30)\n")
-                minimum = minimum.split(",")
-                minimum = [int(val.strip()) for val in minimum]
-                tables_dict[table_name][entity]["min"] = int(minimum)
-                maximum = input("What is the upper bound of datetime allowed for " + str.upper(entity) + "? Please input using this format (24HR): YY, MM, DD, hh, mm, ss (e.g. for 14 February 1999, 6:25:30pm, input 14, 2, 1999, 18, 25, 30)\n")
-                maximum = maximum.split(",")
-                maximum = [int(val.strip()) for val in maximum]
-                tables_dict[table_name][entity]["max"] = int(maximum)
+                elif datetime_type == 'dt':
+                    minimum = input("What is the lower bound of datetime allowed for " + str.upper(entity) + "? Please input using this format (24HR): YY, MM, DD, hh, mm, ss (e.g. for 14 February 1999, 6:25:30pm, input 14, 2, 1999, 18, 25, 30)\n")
+                    minimum = minimum.split(",")
+                    minimum = [int(val.strip()) for val in minimum]
+                    tables_dict[table_name][entity]["min"] = int(minimum)
+                    maximum = input("What is the upper bound of datetime allowed for " + str.upper(entity) + "? Please input using this format (24HR): YY, MM, DD, hh, mm, ss (e.g. for 14 February 1999, 6:25:30pm, input 14, 2, 1999, 18, 25, 30)\n")
+                    maximum = maximum.split(",")
+                    maximum = [int(val.strip()) for val in maximum]
+                    tables_dict[table_name][entity]["max"] = int(maximum)
 
                 
         # Foreign Key Constraint
@@ -213,53 +218,48 @@ def main():
         # TODO: Generating data (Kenny)
         # Implementation does not consider FD constraints
         ### if fd_list is None
-        output_list = list()
+        output_dict = {}
         for indiv_entity in tables_dict[table_name]["entity_list"]:
-            if (indiv_entity["type"] == 'postcode'):
+            if (tables_dict[table_name][indiv_entity]["type"] == 'postcode'):
                 # requires import from jeff's code
-                output_list.append(postcode_generator(num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
-            elif (indiv_entity["type"] == 'card_num'):
-                output_list.append(credit_card_number_generator(num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
-            elif (indiv_entity["type"] == 'isbn'):
-                output_list.append(isbn_generator(num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
-            elif (indiv_entity["type"] == 'id'):
-                output_list.append(id_generator(min=tables_dict[table_name][indiv_entity]["min"], max=tables_dict[table_name][indiv_entity]["max"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], num_rows=tables_dict[table_name]["num_rows"]))
-            elif (indiv_entity["type"] == 'name'):
-                output_list.append(name_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
-            elif (indiv_entity["type"] == 'address'):
-                output_list.append(address_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
-            elif (indiv_entity["type"] == 'email'):
-                output_list.append(email_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
-            elif (indiv_entity["type"] == 'char'):
-                output_list.append(generate_random_strings(length=tables_dict[table_name][indiv_entity]["length"], pattern=tables_dict[table_name][indiv_entity]["pattern"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"]))
-            elif (indiv_entity["type"] == 'num'):
-                if (indiv_entity["num_type"] == 'i'):
-                    output_list.append(int_generator(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], unique=False, selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
-                elif (indiv_entity["num_type"] == 'f'):
-                    if (indiv_entity["distribution"] == 'n'):
-                        output_list.append(float_generator_normal(float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], decimals=tables_dict[table_name][indiv_entity]["decimals"])))
+                output_dict[indiv_entity] = postcode_generator(num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+            elif (tables_dict[table_name][indiv_entity]["type"] == 'card_num'):
+                output_dict[indiv_entity] = credit_card_number_generator(num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+            elif (tables_dict[table_name][indiv_entity]["type"] == 'isbn'):
+                output_dict[indiv_entity] = isbn_generator(num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+            elif (tables_dict[table_name][indiv_entity]["type"] == 'id'):
+                output_dict[indiv_entity] = id_generator(min=tables_dict[table_name][indiv_entity]["min"], max=tables_dict[table_name][indiv_entity]["max"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], num_rows=tables_dict[table_name]["num_rows"])
+            elif (tables_dict[table_name][indiv_entity]["type"] == 'name'):
+                output_dict[indiv_entity] = name_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+            elif (tables_dict[table_name][indiv_entity]["type"] == 'address'):
+                output_dict[indiv_entity] = address_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+            elif (tables_dict[table_name][indiv_entity]["type"] == 'email'):
+                output_dict[indiv_entity] = email_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+            elif (tables_dict[table_name][indiv_entity]["type"] == 'char'):
+                output_dict[indiv_entity] = generate_random_strings(length=tables_dict[table_name][indiv_entity]["length"], pattern=tables_dict[table_name][indiv_entity]["pattern"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+            elif (tables_dict[table_name][indiv_entity]["type"] == 'num'):
+                if (tables_dict[table_name][indiv_entity]["num_type"] == 'i'):
+                    output_dict[indiv_entity] = int_generator(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], unique=False, selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
+                elif (tables_dict[table_name][indiv_entity]["num_type"] == 'f'):
+                    if (tables_dict[table_name][indiv_entity]["distribution"] == 'n'):
+                        output_dict[indiv_entity] = float_generator_normal(float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], decimals=tables_dict[table_name][indiv_entity]["decimals"]))
                     # elif (indiv_entity["distribution"] == 'p'):
-                        # output_list.append()
+                        # output_dict[indiv_entity] )
                     else:
-                        output_list.append(float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
+                        output_dict[indiv_entity] = float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
 
-            elif (indiv_entity["type"] == 'dt'):
-                if (indiv_entity["dt_type"] == 'd'):
-                    output_list.append(generate_date(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
-                elif (indiv_entity["dt_type"] == 't'):
-                    output_list.append(generate_time(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
-                elif (indiv_entity["dt_type"] == 'dt'):    
-                    output_list.append(generate_datetime(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
-        # to import csv
-        myFile = open('realistic_data_generator.csv', 'w')
-        writer = csv.writer(myFile)
-        writer.writerow(tables_dict[table_name]["entity_list"])
-        for list_index in range(len(int(num_rows))):
-            temp_row = list()
-            for entity_index in range(len(tables_dict[table_name]["entity_list"])):
-                temp_row.append(output_list[entity_index][list_index])
-            writer.writerow(temprow)
-        myFile.close()
+            # elif (indiv_entity["type"] == 'dt'):
+            #     if (indiv_entity["dt_type"] == 'd'):
+            #         output_list.append(generate_date(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
+            #     elif (indiv_entity["dt_type"] == 't'):
+            #         output_list.append(generate_time(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
+            #     elif (indiv_entity["dt_type"] == 'dt'):    
+            #         output_list.append(generate_datetime(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
+        
+        # Save table data to csv
+        output = pd.DataFrame(output_dict)
+        output.to_csv(str.upper(table_name) + '_data.csv')
+        
 
         # ### if fd_list is not None
         # output_list = list()
