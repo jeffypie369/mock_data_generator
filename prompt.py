@@ -4,6 +4,7 @@
 
 import pandas as pd
 from random import randrange
+import re
 from functions import *
 
 def reinput():
@@ -46,7 +47,7 @@ def main():
             num_entities = input("How many columns for " + str.upper(table_name) + " not counting foreign keys?\n")
         while not num_entities.isnumeric(): # Only numbers
             num_entities = reinput()
-        region = input("For the columns name, address and email, we support the following languages/regions: English, French. Input 'en' for English and 'fr' for French.\n")
+        region = input("For the columns name, address and email, we currently support the following languages/regions: English, French. Input 'en' for English and 'fr' for French.\n")
         while region not in ["en", "fr"]: # Only "en" or "fr"
             region = reinput()
         for j in range(int(num_entities)):
@@ -120,6 +121,7 @@ def main():
                 numeric_type = input("Does " + str.upper(entity) + " contain integers (no decimal places) or floats (with decimal places)?\nIf integers, input 'i'. If floats, input 'f'.\n")
                 while not any(c in "fi" for c in numeric_type): # Only f or i
                     numeric_type = reinput()
+                tables_dict[table_name][entity]["num_type"] = numeric_type
 
                 if numeric_type == 'f':
                     distribution = input("Will " + str.upper(entity) + " values be in a specific mathematical distribution? Input:\n- 'n' for Normal Distribution\n- 'p' for Poisson Distribution\n- 's' to skip (default: Uniform Distribution)\n")
@@ -132,7 +134,17 @@ def main():
                         decimals = reinput()
                     tables_dict[table_name][entity]["decimals"] = int(decimals)
 
-                    if distribution == 'n': # Normal Distribution of Floats
+                    if distribution == 's': # Uniform Distribution of Floats
+                        minimum = input("What is the minimum value allowed for " + str.upper(entity) + "?\n")
+                        while not isfloat(minimum): # Only float
+                            minimum = reinput()
+                        tables_dict[table_name][entity]["min"] = float(minimum)
+                        maximum = input("What is the maximum value allowed for " + str.upper(entity) + "?\n")
+                        while not isfloat(maximum) or float(maximum) < float(minimum): # Only float
+                            maximum = reinput()
+                        tables_dict[table_name][entity]["max"] = float(maximum)
+
+                    elif distribution == 'n': # Normal Distribution of Floats
                         mean = input("Input mean value (e.g. 0) in the Normal distribution for " + str.upper(entity) + ":\n")
                         while not isfloat(mean): # Only float
                             mean = reinput()
@@ -142,33 +154,60 @@ def main():
                         tables_dict[table_name][entity]["mean"] = float(mean)
                         tables_dict[table_name][entity]["sd"] = float(sd)
 
-                    if distribution == 'p': # Poisson Distribution of Floats
+                    elif distribution == 'p': # Poisson Distribution of Floats
                         mean = input("Input lambda mean value (e.g. 10) in the Poisson distribution for " + str.upper(entity) + ":\n")
                         tables_dict[table_name][entity]["mean"] = float(mean)
 
-                if numeric_type == 'i' or (numeric_type == 'f' and distribution == 's'): # Uniform Distribution of Integers/Floats
+                elif numeric_type == 'i' : # Uniform Distribution of Integers
                     minimum = input("What is the minimum value allowed for " + str.upper(entity) + "?\n")
-                    while not isfloat(minimum): # Only float
+                    while not re.match(r'^-?\d+$', minimum): # Only integer
                         minimum = reinput()
-                    tables_dict[table_name][entity]["min"] = int(minimum) if numeric_type == 'i' else float(minimum)
-                    minimum_compulsory = input("Must there be a " + str.upper(entity) + " value of " + minimum + " in the dataset?\nIf compulsory, input 'y'. If not, input 'n'\n")
-                    while not any(c in "yn" for c in minimum_compulsory): # Only y or n
-                        minimum_compulsory = reinput()
-                    tables_dict[table_name][entity]["compulsory_min"] = True if minimum_compulsory == 'y' else False
                     maximum = input("What is the maximum value allowed for " + str.upper(entity) + "?\n")
-                    while not isfloat(maximum): # Only float
+                    while not re.match(r'^-?\d+$', maximum): # Only integer
                         maximum = reinput()
-                    tables_dict[table_name][entity]["max"] = int(maximum) if numeric_type == 'i' else float(maximum)
-                    maximum_compulsory = input("Must there be a " + str.upper(entity) + " value of " + maximum + " in the dataset?\nIf compulsory, input 'y'. If not, input 'n'\n")
-                    while not any(c in "yn" for c in maximum_compulsory): # Only y or n
-                        maximum_compulsory = reinput()
-                    tables_dict[table_name][entity]["compulsory_max"] = True if maximum_compulsory == 'y' else False
+                    
+                    tables_dict[table_name][entity]["min"] = int(minimum)
+                    tables_dict[table_name][entity]["max"] = int(maximum)
+                    # minimum_compulsory = input("Must there be a " + str.upper(entity) + " value of " + minimum + " in the dataset?\nIf compulsory, input 'y'. If not, input 'n'\n")
+                    # while not any(c in "yn" for c in minimum_compulsory): # Only y or n
+                    #     minimum_compulsory = reinput()
+                    # tables_dict[table_name][entity]["compulsory_min"] = True if minimum_compulsory == 'y' else False
+                    # maximum_compulsory = input("Must there be a " + str.upper(entity) + " value of " + maximum + " in the dataset?\nIf compulsory, input 'y'. If not, input 'n'\n")
+                    # while not any(c in "yn" for c in maximum_compulsory): # Only y or n
+                    #     maximum_compulsory = reinput()
+                    # tables_dict[table_name][entity]["compulsory_max"] = True if maximum_compulsory == 'y' else False
 
-                    if numeric_type == 'i':
-                        exclusion = input("Input any values in your defined range that you want to exclude for " + str.upper(entity) + ".\nSeparate them by commas (e.g. -1, 0, 1).\nIf none, input 'n':\n")
+                    exclusion = input("Input any integers in your defined range that you want to exclude for " + str.upper(entity) + ".\nSeparate them by commas (e.g. -1, 0, 1).\nIf none, input 'n':\n")
+                    if exclusion=='n':
+                        pass
+                    else:
                         exclusion = exclusion.split(",")
-                        exclusion = [int(val.strip()) for val in exclusion]
-                        tables_dict[table_name][entity]["exclusion"] = exclusion
+                        exclusion_processed, exclusion_error, retry_flag = [], [], False
+                        for val in exclusion:
+                            val = val.strip()
+                            try:
+                                val = int(val)
+                                exclusion_processed.append(val)
+                            except:
+                                exclusion_error.append(val)
+                                retry_flag = True
+                        while retry_flag == True:
+                            exclusion_addon = input("The following input values were not processed due to formatting: " + str(exclusion_error) + "\nPlease verify that your inputs are integers, and input any corrected/additional values you wish to add. Separate them by commas (e.g. -1, 0, 1).\nIf you wish to skip, input 's':\n")
+                            exclusion_error, retry_flag = [], False
+                            if exclusion_addon == 's':
+                                pass
+                            else:
+                                exclusion_addon = exclusion_addon.split(",")
+                                for val in exclusion_addon:
+                                    val = val.strip()
+                                    try:
+                                        val = int(val)
+                                        exclusion_processed.append(val)
+                                    except:
+                                        exclusion_error.append(val)
+                                        retry_flag = True
+                        # exclusion = [int(val.strip()) for val in exclusion]
+                        tables_dict[table_name][entity]["exclusion"] = exclusion_processed
 
 
 
@@ -231,7 +270,7 @@ def main():
         fd_list = []
         if int(num_fd) > 0:
             for m in range(int(num_fd)):
-                fd = input("Input FD" + str(m+1) + " in the format \"COLUMN_1 -> COLUMN_2, COLUMN_3\" (e.g. student_id -> student_name, student_address). \n")
+                fd = input("Input FD" + str(m+1) + " in the format \"COLUMN_1 -> COLUMN_2, COLUMN_3\" (e.g. student_id -> student_name, student_address).\nFor reference, this table has the following columns: "+ str(tables_dict[table_name]["entity_list"]))
                 fd = fd.split('->')
                 for nidx, n in enumerate(fd):
                     n = list(n.split(','))
