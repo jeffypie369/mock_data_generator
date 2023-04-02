@@ -1,5 +1,5 @@
 # TODO: Account for composite keys (Jeff) - Done
-# TODO: Add one more language/region for more "realistic" data. French? https://faker.readthedocs.io/en/master/locales/fr_FR.html# (Jeff)
+# TODO: Add one more language/region for more "realistic" data. French? https://faker.readthedocs.io/en/master/locales/fr_FR.html# (Jeff) - Done
 # TODO: Add foreign key question when it is not the first table (Jeff) - Done
 
 import csv
@@ -44,6 +44,9 @@ def main():
             num_entities = input("How many columns for " + str.upper(table_name) + " not counting foreign keys?\n")
         while not num_entities.isnumeric(): # Only numbers
             num_entities = reinput()
+        region = input("For the columns name, address and email, we support the following languages/regions: English, French. Input 'en' for English and 'fr' for French.\n")
+        while region not in ["en", "fr"]: # Only "en" or "fr"
+            region = reinput()
         for j in range(int(num_entities)):
             entity = input("What is the name of column " + str(j+1) + "?\n")
             while any(c in invalid_characters for c in entity): # Only word characters
@@ -91,6 +94,11 @@ def main():
                         while not min_length.isnumeric(): # Only numbers
                             min_length = reinput()
                         tables_dict[table_name][entity]["min"] = int(min_length)
+                    if entity_type in ["name", "address", "email"]:
+                        if region == "en":
+                            tables_dict[table_name][entity]["region"] = "en_US"
+                        else:
+                            tables_dict[table_name][entity]["region"] = "fr_FR"
             
             if entity_type == 'char':
                 length = input("What is the length of " + str.upper(entity) + "?\n")
@@ -230,9 +238,9 @@ def main():
             elif (tables_dict[table_name][indiv_entity]["type"] == 'id'):
                 output_dict[indiv_entity] = id_generator(min=tables_dict[table_name][indiv_entity]["min"], max=tables_dict[table_name][indiv_entity]["max"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], num_rows=tables_dict[table_name]["num_rows"])
             elif (tables_dict[table_name][indiv_entity]["type"] == 'name'):
-                output_dict[indiv_entity] = name_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+                output_dict[indiv_entity] = name_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], region=tables_dict[table_name][indiv_entity]["region"])
             elif (tables_dict[table_name][indiv_entity]["type"] == 'address'):
-                output_dict[indiv_entity] = address_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
+                output_dict[indiv_entity] = address_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], region=tables_dict[table_name][indiv_entity]["region"])
             elif (tables_dict[table_name][indiv_entity]["type"] == 'email'):
                 output_dict[indiv_entity] = email_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
             elif (tables_dict[table_name][indiv_entity]["type"] == 'char'):

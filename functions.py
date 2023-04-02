@@ -1,12 +1,18 @@
 # Generate mock postcode
 import math
 import random
+import string
 import numpy as np
+from collections import OrderedDict
 from faker import Faker
 
-fake = Faker()
+locales = OrderedDict([
+    ('en-US', 1),
+    ('fr_FR', 2),
+])
 
 def postcode_generator(num_rows=10, selectivity=0.2, exclusion=None):
+    fake = Faker()
     if exclusion is None:
         exclusion = []
 
@@ -30,6 +36,7 @@ def postcode_generator(num_rows=10, selectivity=0.2, exclusion=None):
 
 # Generate mock credit card numbers
 def credit_card_number_generator(num_rows=10, selectivity=0.2, exclusion=None):
+    fake = Faker()
     if exclusion is None:
         exclusion = []
 
@@ -53,6 +60,7 @@ def credit_card_number_generator(num_rows=10, selectivity=0.2, exclusion=None):
 
 # Generate mock isbn
 def isbn_generator(num_rows=10, selectivity=0.2, exclusion=None):
+    fake = Faker()
     if exclusion is None:
         exclusion = []
 
@@ -114,7 +122,8 @@ def id_generator(min=1, max=50, selectivity=0, exclusion=[], num_rows=100):
 
   return mock_data
 
-def name_generator(max=50, num_rows=10, selectivity=0.2, exclusion=None):
+def name_generator(max=50, num_rows=10, selectivity=0.2, exclusion=None, region='en_US'):
+    fake = Faker(locales)
     if exclusion is None:
         exclusion = []
 
@@ -125,7 +134,7 @@ def name_generator(max=50, num_rows=10, selectivity=0.2, exclusion=None):
 
     unique_names = []
     while len(unique_names) < unique_data:
-        name = fake.name()
+        name = fake[region].name()
         if name[:max] not in exclusion:
             unique_names.append(name[:max])
 
@@ -136,7 +145,8 @@ def name_generator(max=50, num_rows=10, selectivity=0.2, exclusion=None):
     random.shuffle(names)
     return names
 
-def address_generator(max=50, num_rows=10, selectivity=0.2, exclusion=None):
+def address_generator(max=50, num_rows=10, selectivity=0.2, exclusion=None, region='en_US'):
+    fake = Faker(locales)
     if exclusion is None:
         exclusion = []
 
@@ -147,7 +157,7 @@ def address_generator(max=50, num_rows=10, selectivity=0.2, exclusion=None):
 
     unique_addresses = []
     while len(unique_addresses) < unique_data:
-        address = fake.address().replace('\n', ', ')
+        address = fake[region].address().replace('\n', ', ')
         if address[:max] not in exclusion:
             unique_addresses.append(address[:max])
 
@@ -158,7 +168,8 @@ def address_generator(max=50, num_rows=10, selectivity=0.2, exclusion=None):
     random.shuffle(addresses)
     return addresses
 
-def email_generator(max=50, selectivity=0, exclusion=[], num_rows=100):
+def email_generator(max=50, selectivity=0, exclusion=[], num_rows=100, region='en_US'):
+  fake = Faker(locales)
   possible_domains = ["@gmail.com", "@hotmail.com", "@outlook.com", "@yahoo.com"]
   mock_data = []
 
@@ -166,7 +177,7 @@ def email_generator(max=50, selectivity=0, exclusion=[], num_rows=100):
     num_values = int(1 // selectivity)
     seq = []
     for i in range(num_values):
-      name = fake.name().lower().replace(" ", "")
+      name = fake[region].name().lower().replace(" ", "")
       email = name + random.choice(possible_domains)
       # Check nonequality constraint
       while email in exclusion:
