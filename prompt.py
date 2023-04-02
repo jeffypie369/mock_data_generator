@@ -2,8 +2,8 @@
 # TODO: Add one more language/region for more "realistic" data. French? https://faker.readthedocs.io/en/master/locales/fr_FR.html# (Jeff) - Done
 # TODO: Add foreign key question when it is not the first table (Jeff) - Done
 
-import csv
 import pandas as pd
+from random import randrange
 from functions import *
 
 def reinput():
@@ -24,12 +24,14 @@ def main():
         num_tables = reinput()
     
     tables_dict = {}
+    all_output_dict = {}
 
     for i in range(int(num_tables)):
         # Table
         table_name = input("Input the name of Table " + str(i+1) + ":\n")
         while any(c in invalid_characters for c in table_name): # Only word characters
             table_name = reinput()
+        table_name = str.upper(table_name)
         tables_dict[table_name] = {}
         num_rows = input("How many rows of data do you need for " + str.upper(table_name) + "? Min: 1, Max: 10000\n")
         while not num_rows.isnumeric(): # Only numbers
@@ -206,7 +208,7 @@ def main():
                     maximum = [int(val.strip()) for val in maximum]
                     tables_dict[table_name][entity]["max"] = int(maximum)
 
-                
+
         # Foreign Key Constraint
         if i > 0:
             has_foreign_key = input("Does " + table_name + " have any foreign keys? Input 'y' for yes, 'n' for no:\n")
@@ -217,7 +219,7 @@ def main():
                 num_foreign_keys = input("How many foreign keys are there?\n")
                 while not num_foreign_keys.isnumeric(): # Only numbers
                     num_foreign_keys = reinput()
-                for k in range(num_foreign_keys):
+                for k in range(int(num_foreign_keys)):
                     foreign_key = input("Input the foreign table and column of the foreign key in the format TABLE.COLUMN (e.g., Student.student_id):\n")
                     foreign_table, foreign_key = foreign_key.split('.')
                     foreign_key_tup = (str.upper(foreign_table), foreign_key)
@@ -255,7 +257,7 @@ def main():
                         # output_dict[indiv_entity] )
                     else:
                         output_dict[indiv_entity] = float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
-
+            
             # elif (indiv_entity["type"] == 'dt'):
             #     if (indiv_entity["dt_type"] == 'd'):
             #         output_list.append(generate_date(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
@@ -264,8 +266,30 @@ def main():
             #     elif (indiv_entity["dt_type"] == 'dt'):    
             #         output_list.append(generate_datetime(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
         
+        if i > 0 and "foreign_keys" in tables_dict[table_name]:
+            fk_dict = {}
+            for fk in tables_dict[table_name]["foreign_keys"]:
+                fk_table = fk[0]
+                fk_entity = fk[1]
+                if fk_table not in fk_dict:
+                    fk_dict[fk_table] = []
+                fk_dict[fk_table].append(fk_entity)
+            for fk_table in fk_dict:
+                fk_data = all_output_dict[fk_table]
+                df_fk_data = pd.DataFrame(fk_data)
+                df_fk_data = df_fk_data[fk_dict[fk_table]]
+                fk_num_rows = int(tables_dict[fk_table]["num_rows"])
+                for _ in range(int(num_rows)):
+                    num = randrange(fk_num_rows)
+                    for ent in fk_dict[fk_table]:
+                        if ent not in output_dict:
+                            output_dict[ent] = []
+                        output_dict[ent].append(df_fk_data[ent][num])
+            
+
         # Save table data to csv
         output = pd.DataFrame(output_dict)
+        all_output_dict[str.upper(table_name)] = output_dict
         output.to_csv(str.upper(table_name) + '_data.csv')
         
 
