@@ -168,6 +168,35 @@ def address_generator(max=50, num_rows=10, selectivity=0.2, exclusion=None, regi
     random.shuffle(addresses)
     return addresses
 
+def email_generator_from_names(names_list=[], max=50, num_rows=10, exclusion=None):
+    if exclusion is None:
+        exclusion = []
+
+    possible_domains = ["@gmail.com", "@hotmail.com", "@outlook.com", "@yahoo.com"]
+    emails = []
+
+    # Loop until the desired number of email addresses is generated
+    while len(emails) < num_rows:
+        # Cycle through the names in the names_list
+        for name in names_list:
+            if len(emails) >= num_rows:
+                break
+
+            # Convert the name to lowercase and remove spaces
+            name_parts = name.lower().split()
+            name_email_base = "".join(name_parts)
+
+            while True:
+                # Add a random domain to the name
+                name_email = name_email_base + random.choice(possible_domains)
+
+                # If the generated email is not in the exclusion list, add it to the emails list
+                if name_email not in exclusion:
+                    emails.append(name_email[:max])
+                    break
+
+    return emails
+
 def email_generator(max=50, selectivity=0, exclusion=[], num_rows=100, region='en_US'):
   fake = Faker(locales)
   possible_domains = ["@gmail.com", "@hotmail.com", "@outlook.com", "@yahoo.com"]
@@ -214,9 +243,9 @@ def generate_random_strings(length=10, pattern=None, num_rows=1, selectivity=0.2
         raise ValueError("Length of the pattern must be equal to the specified length")
 
     def random_char(char_type):
-        if char_type == "letter":
+        if char_type == "l":
             return random.choice(string.ascii_letters)
-        elif char_type == "digit":
+        elif char_type == "d":
             return random.choice(string.digits)
         else:
             return random.choice(string.ascii_letters + string.digits)
