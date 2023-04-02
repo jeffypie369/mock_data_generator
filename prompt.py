@@ -313,13 +313,23 @@ def main():
         
         else:
             output_list = list()
-            dependency_dict = {}
-            temp_dependency_dict = {}
+            output_dict = {}
+            entity_dict = {}
+            entity_index = 0
+            for entity in entity_list:
+                entity_dict[entity] = entity_index
+                entity_index = entity_index + 1
+            
+            lhs = []
+            rhs = []
             for fd in fd_list:
-                dependency_dict[fd] = {}
+                for lhs_fd in fd[0]:
+                    lhs.append(entity_dict[lhs_fd])
+                for rhs_fd in fd[1]:
+                    rhs.append(entity_dict[rhs_fd])
+
                 
             for row_index in range(int(num_rows)):
-                temp_dependency_dict = {}
                 temp_row = list()
                 row_satisfies_fd = True
                 for indiv_entity in tables_dict[table_name]["entity_list"]:
@@ -359,43 +369,46 @@ def main():
                     #     elif (indiv_entity["dt_type"] == 'dt'):    
                     #         data_generated = generate_datetime(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=1, exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
                     
-                    if i > 0 and "foreign_keys" in tables_dict[table_name]:
-                        fk_dict = {}
-                        for fk in tables_dict[table_name]["foreign_keys"]:
-                            fk_table = fk[0]
-                            fk_entity = fk[1]
-                            if fk_table not in fk_dict:
-                                fk_dict[fk_table] = []
-                            fk_dict[fk_table].append(fk_entity)
-                        for fk_table in fk_dict:
-                            fk_data = all_output_dict[fk_table]
-                            df_fk_data = pd.DataFrame(fk_data)
-                            df_fk_data = df_fk_data[fk_dict[fk_table]]
-                            fk_num_rows = int(tables_dict[fk_table]["num_rows"])
-                            num = randrange(fk_num_rows)
-                            for ent in fk_dict[fk_table]:
-                                if ent not in output_dict:
-                                    output_dict[ent] = []
-                                output_dict[ent].append(df_fk_data[ent][num])
+                    temp_row.append(data_generated)
                     
-                    for fd in fd_list:
-                        temp_dependency_dict[fd] = {}
-                        lhs_temp = list()
-                        rhs_temp = list()    
-                        if indiv_entity in fd[0]:
-                            lhs_temp.append(data_generated)
-                        if indiv_entity in fd[1]:
-                            rhs_temp.append(data_generated)
-                        temp_row.append(data_generated)
+                    # if i > 0 and "foreign_keys" in tables_dict[table_name]:
+                    #     fk_dict = {}
+                    #     for fk in tables_dict[table_name]["foreign_keys"]:
+                    #         fk_table = fk[0]
+                    #         fk_entity = fk[1]
+                    #         if fk_table not in fk_dict:
+                    #             fk_dict[fk_table] = []
+                    #         fk_dict[fk_table].append(fk_entity)
+                    #     for fk_table in fk_dict:
+                    #         fk_data = all_output_dict[fk_table]
+                    #         df_fk_data = pd.DataFrame(fk_data)
+                    #         df_fk_data = df_fk_data[fk_dict[fk_table]]
+                    #         fk_num_rows = int(tables_dict[fk_table]["num_rows"])
+                    #         num = randrange(fk_num_rows)
+                    #         for ent in fk_dict[fk_table]:
+                    #             if ent not in output_dict:
+                    #                 output_dict[ent] = []
+                    #             output_dict[ent].append(df_fk_data[ent][num])
 
-                        if (dependency_dict[fd][lhs_temp] is None and temp_dependency_dict[fd][lhs_temp] is None):
-                            temp_dependency_dict[fd][lhs_temp] = rhs_temp
-                        else:
-                            if (dependency_dict[fd][lhs_temp] == rhs_temp or temp_dependency_dict[fd][lhs_temp] == rhs_temp):
-                                temp_dependency_dict[fd][lhs_temp] = rhs_temp
-                            else:
-                                row_satisfies_fd = False
-                                break
+                temp_row_lhs = []
+                temp_row_rhs = []
+                for lhs_index in lhs:
+                    temp_row_lhs.append(temp_row[lhs_index])
+                for rhs_index in rhs:
+                    temp_row_rhs.append(temp_row[rhs_index])
+                
+                for each_row in output_list:
+                    output_row_lhs = []
+                    output_row_rhs = []
+                    for lhs_index in lhs:
+                        output_row_lhs.append(each_row[lhs_index])
+                    for rhs_index in rhs:
+                        output_row_rhs.append(each_row[rhs_index])
+                    
+                    if (temp_row_lhs == output_row_lhs):
+                        row_satisfies_fd = temp_row_rhs == output_row_rhs    
+
+
                 if row_satisfies_fd is True:
                     output_list.append(temp_row)
                     print(output_list)
