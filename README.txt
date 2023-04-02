@@ -12,6 +12,7 @@ User Instructions
 10. If step 9 is 'n', input whether Column 1 is to have unique values. (Condition: 'y' or 'n')
 11. Input the selectivity constraint, if any. Input 0 if you do not have a selectivity constraint for this column. (Condition: 0 <= selectivity <= 1)
 12. The path splits from here depending on whether your column type is char, num or dt.
+
 (CHARACTER-path)
 12.1. If your column is one of the preset columns (postcode, card_num, isbn, id, name, address, email):
 12.1.a. Input any values you want to exclude, separated by commas. If none, input 'n'. (Conditions: Comma-separated strings or 'n')
@@ -37,6 +38,7 @@ User Instructions
 12.1. Input whether column contains only date, or time, or both. (Condition: 'd' or 't' or 'dt')
 12.2. Input the desired lower bound following the format provided by the prompt.
 12.3. Input the desired upper bound following the format provided by the prompt.
+
 13. Repeat steps 6 to 12 for all other columns in Table 1.
 14. If the current table is not the first table, input whether there are foreign keys. Here, it is crucial to note that you can only reference tables that have already been created prior to this table. (Condition: 'y' or 'n')
 15. Input the number of foreign keys. (Condition: Integer)

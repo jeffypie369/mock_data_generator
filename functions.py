@@ -359,3 +359,56 @@ def float_generator_uniform(n, min, max, exclusion=None, decimals=2, unique=Fals
   seq = [val/pow for val in seq]
 
   return seq
+
+def int_generator_single(min, max, exclusion=None):
+
+# compulsory_min=False, compulsory_max=False, num_rows, distribution='uniform', decimals=2, unique=False, selectivity=0
+
+  """
+  min: min value of list of integers
+  max: max value of list of integers
+  exclusion: list of unique values in (min, max) to be excluded from generation
+  """
+
+  range_size = max-min+1
+  options = set(np.arange(min, max+1))
+
+  probabilities = None
+  if exclusion is not None:
+    probabilities = np.array(range_size*[1/(range_size-len(exclusion))])
+    for num in exclusion:
+      options.remove(num)
+      probabilities[num-min] = 0
+
+  rng = np.random.default_rng()
+  val = list(rng.choice(np.arange(min, max+1), size=1, p=probabilities))
+    
+  return val
+
+def float_generator_single(min, max, distribution='uniform', exclusion=None, decimals=2):
+
+# compulsory_min=False, compulsory_max=False, num_rows, unique=False, selectivity=0
+
+  """
+  min: min value of list of integers
+  max: max value of list of integers
+  distribution: specifies type of distribution that generated will be in, either 'uniform' or 'normal'
+  decimals: number of digits after decimal point
+  exclusion: list of unique values in (min, max) to be excluded from generation. Note: only applicable for uniform distribution.
+  """
+
+  if distribution == 'uniform':
+
+    pow = 10**decimals
+    val = int_generator_single(pow*min, pow*max, exclusion = None if exclusion is None else [pow*val for val in exclusion])
+    val = val/pow
+
+  elif distribution == 'normal':
+    normalized_val = np.random.normal(0, 1, 1)[0]
+
+    half_range = (max-min) / 2
+    midpoint = min + half_range
+    val = (normalized_val / 3.0902 * half_range) + midpoint
+    val = round(val, decimals)
+    
+  return val
