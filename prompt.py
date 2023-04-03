@@ -279,9 +279,16 @@ def main():
                 while not num_foreign_keys.isnumeric(): # Only numbers
                     num_foreign_keys = reinput()
                 for k in range(int(num_foreign_keys)):
-                    foreign_key = input("Input the foreign table and column of the foreign key in the format TABLE.COLUMN (e.g., Student.student_id):\n")
-                    foreign_table, foreign_key = foreign_key.split('.')
-                    foreign_key_tup = (str.upper(foreign_table), foreign_key)
+                    foreign_key_table = input(f"Foreign key #{k+1}: Input the referenced foreign table:\n")
+                    foreign_key_column = input(f"Foreign key #{k+1}: Input the unique column being referenced in {foreign_key_table}\n")
+                    while (foreign_key_column not in tables_dict[foreign_key_table]["entity_list"] or tables_dict[foreign_key_table][foreign_key_column]["is_unique"] == False):
+                        if (foreign_key_column not in tables_dict[foreign_key_table]["entity_list"]):
+                            input("This column does not exist in the specified table. Please note that column name is case-sensitive. You will be prompted to re-enter the referenced foreign table and column. ENTER to proceed.")
+                        else:
+                            input("This column does not have unique values in the specified table, and cannot serve as foreign key. You will be prompted to re-enter the referenced foreign table and column. ENTER to proceed.")
+                        foreign_key_table = input(f"Foreign key #{k+1}: Input the referenced foreign table:\n")
+                        foreign_key_column = input(f"Foreign key #{k+1}: Input the unique column being referenced in {foreign_key_table}\n")
+                    foreign_key_tup = (str.upper(foreign_key_table), foreign_key_column)
                     tables_dict[table_name]["foreign_keys"].append(foreign_key_tup)
         
         num_fd = input("Input the number of functional dependencies (FDs) in this table, 0 if None.\n")
