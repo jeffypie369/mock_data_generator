@@ -63,19 +63,24 @@ def main():
             is_primary_key = input("Is " + str.upper(entity) + " a primary key of " + str.upper(table_name) + "? Input 'y' for yes, 'n' for no:\n(NOTE: Having more than one primary key implies having a composite key)\n")
             while not any(c in "yn" for c in is_primary_key): # Only y or n
                 is_primary_key = reinput()
-            if is_primary_key == 'n':
+            if is_primary_key == 'y':
+                tables_dict[table_name][entity]["is_unique"] = True
+                tables_dict[table_name][entity]["selectivity"] = 0
+            else:
                 is_unique = input("Is " + str.upper(entity) + " unique? Input 'y' for yes, 'n' for no:\n")
                 while not any(c in "yn" for c in is_unique): # Only y or n
                     is_unique = reinput()
-                if is_unique == 'n':
-                    tables_dict[table_name][entity]["is_unique"] = False
-                else:
+                if is_unique == 'y':
                     tables_dict[table_name][entity]["is_unique"] = True
+                    tables_dict[table_name][entity]["selectivity"] = 0
 
-            selectivity = input("Input selectivity, where 0 <= selectivity <= 1. Input 0 for no selectivity constraint:\n")
-            while not isfloat(selectivity): # Only float
-                selectivity = reinput()
-            tables_dict[table_name][entity]["selectivity"] = float(selectivity)
+                else:
+                    tables_dict[table_name][entity]["is_unique"] = False
+
+                    selectivity = input("Input selectivity, where 0 <= selectivity <= 1. Input 0 for no selectivity constraint:\n")
+                    while not isfloat(selectivity): # Only float
+                        selectivity = reinput()
+                    tables_dict[table_name][entity]["selectivity"] = float(selectivity)
 
             # CHAR-specific Constraints (Xu Zeng)
             if entity_type == 'postcode' or  entity_type == 'card_num' or  entity_type == 'isbn' or entity_type == 'id' or entity_type == 'name' or entity_type == 'address' or entity_type == 'email':
@@ -114,105 +119,115 @@ def main():
             # INT/FLOAT-specific Constraints (Amanda)
             
             if entity_type == 'num':
-                numeric_type = input("Does " + str.upper(entity) + " contain integers (no decimal places) or floats (with decimal places)?\nIf integers, input 'i'. If floats, input 'f'.\n")
+                numeric_type = input(f"Does {str.upper(entity)} contain integers (no decimal places) or floats (with decimal places)?\nIf integers, input 'i'. If floats, input 'f'.\n")
                 while not any(c in "fi" for c in numeric_type): # Only f or i
                     numeric_type = reinput()
                 tables_dict[table_name][entity]["num_type"] = numeric_type
 
                 if numeric_type == 'f':
-                    distribution = input("Will " + str.upper(entity) + " values be in a specific mathematical distribution? Input:\n- 'n' for Normal Distribution\n- 's' to skip (default: Uniform Distribution)\n")
-                    while not any(c in "ns" for c in distribution): # Only n or s
-                        distribution = reinput()
-                    tables_dict[table_name][entity]["distribution"] = distribution
-
-                    decimals = input("How many decimal places do you want " + str.upper(entity) + " values to have? Input an integer (e.g. 2):\n")
+                    decimals = input(f"How many decimal places do you want {str.upper(entity)} values to have? Input an integer (e.g. 2):\n")
                     while not decimals.isnumeric(): # Only numbers
                         decimals = reinput()
                     tables_dict[table_name][entity]["decimals"] = int(decimals)
 
+                    distribution = input(f"Will {str.upper(entity)} values be in a specific mathematical distribution? Input:\n- 'n' for Normal Distribution\n- 'p' for Poisson Distribution\n- 's' to skip (default: Uniform Distribution)\n")
+                    while not any(c in "snp" for c in distribution): # Only s, n or p
+                        distribution = reinput()
+                    tables_dict[table_name][entity]["distribution"] = distribution
+
+                    
                     if distribution == 's': # Uniform Distribution of Floats
-                        minimum = input("What is the minimum value allowed for " + str.upper(entity) + "?\n")
+                        if (tables_dict[table_name][entity]["is_unique"] == True):
+                            input(f"You will be prompted to input min and max values for {str.upper(entity)}. Please ensure that there are sufficient distinct values of {decimals} decimal places in your defined range. ENTER to proceed.")
+                        minimum = input(f"What is the minimum value allowed for {str.upper(entity)}?\n")
                         while not isfloat(minimum): # Only float
                             minimum = reinput()
                         tables_dict[table_name][entity]["min"] = float(minimum)
-                        maximum = input("What is the maximum value allowed for " + str.upper(entity) + "?\n")
+                        maximum = input(f"What is the maximum value allowed for {str.upper(entity)}?\n")
                         while not isfloat(maximum) or float(maximum) < float(minimum): # Only float
                             maximum = reinput()
                         tables_dict[table_name][entity]["max"] = float(maximum)
 
                     elif distribution == 'n': # Normal Distribution of Floats
-                        # mean = input("Input mean value (e.g. 0) in the Normal distribution for " + str.upper(entity) + ":\n")
-                        # while not isfloat(mean): # Only float
-                        #     mean = reinput()
-                        # sd = input("Input standard deviation value (e.g. 1) in the normal distribution for " + str.upper(entity) + ":\n")
-                        # while not isfloat(sd): # Only float
-                        #     sd = reinput()
-                        # tables_dict[table_name][entity]["mean"] = float(mean)
-                        # tables_dict[table_name][entity]["sd"] = float(sd)
-                        minimum = input("What is a rough estimated minimum value allowed in the normal distribution of " + str.upper(entity) + "? (Note: This value will occur at a 0.1% probability.)\n")
-                        while not isfloat(minimum): # Only float
-                            minimum = reinput()
-                        tables_dict[table_name][entity]["min"] = float(minimum)
-                        maximum = input("What is a rough estimated maximum value allowed in the normal distribution of " + str.upper(entity) + "? (Note: This value will occur at a 0.1% probability.)\n")
-                        while not isfloat(maximum) or float(maximum) < float(minimum): # Only float
-                            maximum = reinput()
-                        tables_dict[table_name][entity]["max"] = float(maximum)
-                        input("Based on your input min and max values for " + str.upper(entity) + ", the mean will occur at a value of " + str(float(maximum)+(float(minimum)-float(maximum))/2) + ". ENTER to continue.\n")
+                        normal_approach = input(f"How would you like to define the Normal distribution of {str.upper(entity)}?\nTo specify values for mean and standard deviation, input '1'.\nTo specify estimated min and max values (at 0.1% probability), input '2'.\n")
+                        while not any(c in "12" for c in normal_approach): # Only 1 or 2
+                            normal_approach = reinput()
+                        tables_dict[table_name][entity]["normal_approach"] = normal_approach
+                        if normal_approach == '1':
+                            mean = input(f"What is the mean value in the Normal distribution of {str.upper(entity)}?\n")
+                            while not isfloat(mean): # Only float
+                                mean = reinput()
+                            tables_dict[table_name][entity]["mean"] = float(mean)
+                            sd = input(f"What is the standard deviation value in the Normal distribution of {str.upper(entity)}?\n")
+                            while not isfloat(sd): # Only float
+                                sd = reinput()
+                            tables_dict[table_name][entity]["sd"] = float(sd)
+                        else:    
+                            minimum = input(f"What is a rough estimated minimum value allowed in the Normal distribution of {str.upper(entity)}? (Note: This value will occur at a 0.1% probability.)\n")
+                            while not isfloat(minimum): # Only float
+                                minimum = reinput()
+                            tables_dict[table_name][entity]["min"] = float(minimum)
+                            maximum = input(f"What is a rough estimated maximum value allowed in the Normal distribution of {str.upper(entity)}? (Note: This value will occur at a 0.1% probability.)\n")
+                            while not isfloat(maximum) or float(maximum) < float(minimum): # Only float
+                                maximum = reinput()
+                            tables_dict[table_name][entity]["max"] = float(maximum)
+                            input(f"Based on your input min and max values for {str.upper(entity)}, the mean will occur at a value of {str(float(maximum)+(float(minimum)-float(maximum))/2)}. ENTER to proceed.\n")
 
-                    # elif distribution == 'p': # Poisson Distribution of Floats
-                    #     mean = input("Input lambda mean value (e.g. 10) in the Poisson distribution for " + str.upper(entity) + ":\n")
-                    #     tables_dict[table_name][entity]["mean"] = float(mean)
+                    elif distribution == 'p': # Poisson Distribution of Floats
+                        mean = input(f"What is the lambda mean value in the Poisson distribution for {str.upper(entity)}?\n")
+                        while not isfloat(mean): # Only float
+                            mean = reinput()
+                        tables_dict[table_name][entity]["mean"] = float(mean)
+
 
                 elif numeric_type == 'i' : # Uniform Distribution of Integers
-                    minimum = input("What is the minimum value allowed for " + str.upper(entity) + "?\n")
+                    minimum = input(f"What is the minimum value allowed for {str.upper(entity)}?\n")
                     while not re.match(r'^-?\d+$', minimum): # Only integer
                         minimum = reinput()
-                    maximum = input("What is the maximum value allowed for " + str.upper(entity) + "?\n")
+                    maximum = input(f"What is the maximum value allowed for {str.upper(entity)}?\n")
                     while not re.match(r'^-?\d+$', maximum): # Only integer
                         maximum = reinput()
                     
                     tables_dict[table_name][entity]["min"] = int(minimum)
                     tables_dict[table_name][entity]["max"] = int(maximum)
-                    # minimum_compulsory = input("Must there be a " + str.upper(entity) + " value of " + minimum + " in the dataset?\nIf compulsory, input 'y'. If not, input 'n'\n")
-                    # while not any(c in "yn" for c in minimum_compulsory): # Only y or n
-                    #     minimum_compulsory = reinput()
-                    # tables_dict[table_name][entity]["compulsory_min"] = True if minimum_compulsory == 'y' else False
-                    # maximum_compulsory = input("Must there be a " + str.upper(entity) + " value of " + maximum + " in the dataset?\nIf compulsory, input 'y'. If not, input 'n'\n")
-                    # while not any(c in "yn" for c in maximum_compulsory): # Only y or n
-                    #     maximum_compulsory = reinput()
-                    # tables_dict[table_name][entity]["compulsory_max"] = True if maximum_compulsory == 'y' else False
-
-                    exclusion = input("Input any integers in your defined range that you want to exclude for " + str.upper(entity) + ".\nSeparate them by commas (e.g. -1, 0, 1).\nIf none, input 'n':\n")
-                    if exclusion=='n':
-                        pass
-                    else:
-                        exclusion = exclusion.split(",")
-                        exclusion_processed, exclusion_error, retry_flag = [], [], False
-                        for val in exclusion:
-                            val = val.strip()
-                            try:
-                                val = int(val)
-                                exclusion_processed.append(val)
-                            except:
+                
+                if (numeric_type == 'i' and exclusion != 'n') or (numeric_type == 'f' and distribution == 's'):
+                    exclusion_type = 'integers' if numeric_type == 'i' else 'floats'
+                    exclusion = input(f"Input any {exclusion_type} in your defined range that you want to exclude for {str.upper(entity)}.\nSeparate them by commas (e.g. -1, 0, 1).\nIf none, input 'n':\n")
+                    exclusion = exclusion.split(",")
+                    exclusion_processed, exclusion_error, retry_flag = [], [], False
+                    for val in exclusion:
+                        val = val.strip()
+                        try:
+                            val = int(val) if numeric_type == 'i' else float(val)
+                            if (val < tables_dict[table_name][entity]["min"] or val > tables_dict[table_name][entity]["max"]): # out of defined range
                                 exclusion_error.append(val)
                                 retry_flag = True
-                        while retry_flag == True:
-                            exclusion_addon = input("The following input values were not processed due to formatting: " + str(exclusion_error) + "\nPlease verify that your inputs are integers, and input any corrected/additional values you wish to add. Separate them by commas (e.g. -1, 0, 1).\nIf you wish to skip, input 's':\n")
-                            exclusion_error, retry_flag = [], False
-                            if exclusion_addon == 's':
-                                pass
                             else:
-                                exclusion_addon = exclusion_addon.split(",")
-                                for val in exclusion_addon:
-                                    val = val.strip()
-                                    try:
-                                        val = int(val)
-                                        exclusion_processed.append(val)
-                                    except:
+                                exclusion_processed.append(val)
+                        except:
+                            exclusion_error.append(val)
+                            retry_flag = True
+                    while retry_flag == True:
+                        exclusion_addon = input(f"The following input values were not processed, either due to falling out of your defined range, or due to formatting: {str(exclusion_error)}\nPlease verify that your inputs are {exclusion_type} within the range ({minimum},{maximum}), and input any corrected/additional values you wish to add. Separate them by commas (e.g. -1, 0, 1).\nIf you wish to skip, input 's':\n")
+                        exclusion_error, retry_flag = [], False
+                        if exclusion_addon == 's':
+                            pass
+                        else:
+                            exclusion_addon = exclusion_addon.split(",")
+                            for val in exclusion_addon:
+                                val = val.strip()
+                                try:
+                                    val = int(val) if numeric_type == 'i' else float(val)
+                                    if (val < tables_dict[table_name][entity]["min"] or val > tables_dict[table_name][entity]["max"]): # out of defined range
                                         exclusion_error.append(val)
                                         retry_flag = True
-                        # exclusion = [int(val.strip()) for val in exclusion]
-                        tables_dict[table_name][entity]["exclusion"] = exclusion_processed
+                                    else:
+                                        exclusion_processed.append(val)
+                                except:
+                                    exclusion_error.append(val)
+                                    retry_flag = True
+                    tables_dict[table_name][entity]["exclusion"] = exclusion_processed
 
 
 
@@ -313,14 +328,17 @@ def main():
                     output_dict[indiv_entity] = generate_random_strings(length=tables_dict[table_name][indiv_entity]["length"], pattern=tables_dict[table_name][indiv_entity]["pattern"], num_rows=tables_dict[table_name]["num_rows"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
                 elif (tables_dict[table_name][indiv_entity]["type"] == 'num'):
                     if (tables_dict[table_name][indiv_entity]["num_type"] == 'i'):
-                        output_dict[indiv_entity] = int_generator(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], unique=False, selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
+                        output_dict[indiv_entity] = int_generator(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], unique=tables_dict[table_name][indiv_entity]["is_unique"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
                     elif (tables_dict[table_name][indiv_entity]["num_type"] == 'f'):
-                        if (tables_dict[table_name][indiv_entity]["distribution"] == 'n'):
-                            output_dict[indiv_entity] = float_generator_normal(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
-                        # elif (indiv_entity["distribution"] == 'p'):
-                            # output_dict[indiv_entity] )
-                        else:
-                            output_dict[indiv_entity] = float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
+                        if (tables_dict[table_name][indiv_entity]["distribution"] == 's'):
+                            output_dict[indiv_entity] = float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"], unique=tables_dict[table_name][indiv_entity]["is_unique"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
+                        elif (tables_dict[table_name][indiv_entity]["distribution"] == 'p'):
+                            output_dict[indiv_entity] = float_generator_normal(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["mean"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                        elif (tables_dict[table_name][indiv_entity]["distribution"] == 'n'):
+                            if (tables_dict[table_name][indiv_entity]["normal_approach"] == '1'):
+                                output_dict[indiv_entity] = float_generator_normal(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["mean"], tables_dict[table_name][indiv_entity]["sd"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                            else:
+                                output_dict[indiv_entity] = float_generator_minmax_normal(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
                 
                 elif (indiv_entity["type"] == 'dt'):
                     if (indiv_entity["dt_type"] == 'd'):
@@ -403,10 +421,16 @@ def main():
                         if (tables_dict[table_name][indiv_entity]["num_type"] == 'i'):
                             data_generated = int_generator_single(tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
                         elif (tables_dict[table_name][indiv_entity]["num_type"] == 'f'):
-                            if (tables_dict[table_name][indiv_entity]["distribution"] == 'n'):
-                                data_generated = float_generator_single(tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], distribution='normal', exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
-                            else:
+                            if (tables_dict[table_name][indiv_entity]["distribution"] == 's'):
                                 data_generated = float_generator_single(tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], distribution='uniform', exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                            elif (tables_dict[table_name][indiv_entity]["distribution"] == 'p'):
+                                data_generated = float_generator_poisson_single(tables_dict[table_name][indiv_entity]["mean"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                            elif (tables_dict[table_name][indiv_entity]["distribution"] == 'n'):
+                                if (tables_dict[table_name][indiv_entity]["normal_approach"] == '1'):
+                                    data_generated = float_generator_normal_single(tables_dict[table_name][indiv_entity]["mean"], tables_dict[table_name][indiv_entity]["sd"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                                else:
+                                    data_generated = float_generator_single(tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], distribution='normal', exclusion=None, decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                                
                     elif (tables_dict[table_name][indiv_entity]["type"] == 'dt'):
                         if (tables_dict[table_name][indiv_entity]["dt_type"] == 'd'):
                             data_generated = generate_date(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=1, exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])

@@ -326,7 +326,25 @@ def int_generator(n, min, max, exclusion=None, unique=False, selectivity=0):
   np.random.shuffle(seq)
   return seq
 
-def float_generator_normal(n, min, max, decimals=2):
+def float_generator_uniform(n, min, max, exclusion=None, decimals=2, unique=False, selectivity=0):
+
+  """
+  n: total count of floats to generate
+  min: min value of list of floats
+  max: max value of list of floats
+  exclusion: list of unique values in (min, max) to be excluded from generation
+  decimals: number of digits after decimal point
+  unique: True if floats generated must be unique, tops up with NULL values if number of different floats available < number of floats to generate
+  selectivity: percentage in (0,1] for probability that any row is a particular value
+  """
+
+  pow = 10**decimals
+  seq = int_generator(n, int(pow*min), int(pow*max), exclusion = None if exclusion is None else [int(pow*val) for val in exclusion], unique=unique, selectivity=selectivity)
+  seq = [val/pow for val in seq]
+
+  return seq
+
+def float_generator_minmax_normal(n, min, max, decimals=2):
 
   """
   n: total count of floating point numbers to generate
@@ -344,22 +362,29 @@ def float_generator_normal(n, min, max, decimals=2):
 
   return seq
 
-def float_generator_uniform(n, min, max, exclusion=None, decimals=2, unique=False, selectivity=0):
+def float_generator_normal(n, mean, sd, decimals=2):
 
   """
-  n: total count of floats to generate
-  min: min value of list of floats
-  max: max value of list of floats
-  exclusion: list of unique values in (min, max) to be excluded from generation
+  n: total count of floating point numbers to generate
+  mean: mean value of floating point numbers
+  sd: standard value of floating point numbers
   decimals: number of digits after decimal point
-  unique: True if floats generated must be unique, tops up with NULL values if number of different floats available < number of floats to generate
-  selectivity: percentage in (0,1] for probability that any row is a particular value
   """
 
-  pow = 10**decimals
-  seq = int_generator(n, pow*min, pow*max, exclusion = None if exclusion is None else [pow*val for val in exclusion], unique=unique, selectivity=selectivity)
-  seq = [val/pow for val in seq]
+  seq = list(np.random.normal(mean, sd, n))
+  seq = list(round(x, decimals) for x in seq)
+  return seq
 
+def float_generator_poisson(n, mean, decimals=2):
+
+  """
+  n: total count of floating point numbers to generate
+  mean: mean value of floating point numbers
+  decimals: number of digits after decimal point
+  """
+  rng = np.random.default_rng()
+  seq = list(rng.poisson(mean, n))
+  seq = list(round(x, decimals) for x in seq)
   return seq
 
 def int_generator_single(min, max, exclusion=None):
@@ -391,8 +416,8 @@ def float_generator_single(min, max, distribution='uniform', exclusion=None, dec
   min: min value of list of integers
   max: max value of list of integers
   distribution: specifies type of distribution that generated will be in, either 'uniform' or 'normal'
+  exclusion: list of unique values in (min, max) to be excluded from generation. Note: ONLY for uniform distribution
   decimals: number of digits after decimal point
-  exclusion: list of unique values in (min, max) to be excluded from generation. Note: only applicable for uniform distribution.
   """
 
   if distribution == 'uniform':
@@ -402,13 +427,39 @@ def float_generator_single(min, max, distribution='uniform', exclusion=None, dec
     val = val/pow
 
   elif distribution == 'normal':
-    normalized_val = np.random.normal(0, 1, 1)[0]
 
     half_range = (max-min) / 2
     midpoint = min + half_range
+
+    normalized_val = np.random.normal(0, 1, 1)[0]
     val = (normalized_val / 3.0902 * half_range) + midpoint
     val = round(val, decimals)
     
+  return val
+
+def float_generator_normal_single(mean, sd, decimals=2):
+
+  """
+  mean: mean value of floating point numbers in Normal distribution
+  sd: standard value of floating point numbers in Normal distribution
+  decimals: number of digits after decimal point
+  """
+
+  val = np.random.normal(mean, sd, 1)[0]
+  val = round(val, decimals)
+
+  return val
+
+def float_generator_poisson_single(mean, decimals=2):
+
+  """
+  mean: mean value of floating point numbers in Poisson distribution
+  decimals: number of digits after decimal point
+  """
+
+  val = np.random.poisson(mean, 1)[0]
+  val = round(val, decimals)
+
   return val
 
 def generate_time(lower_bound_time=[0,0,0], upper_bound_time=[23,59,59], number_of_times_to_generate=10, exclusion=None, selectivity=0):
