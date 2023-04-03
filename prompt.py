@@ -120,8 +120,8 @@ def main():
                 tables_dict[table_name][entity]["num_type"] = numeric_type
 
                 if numeric_type == 'f':
-                    distribution = input("Will " + str.upper(entity) + " values be in a specific mathematical distribution? Input:\n- 'n' for Normal Distribution\n- 'p' for Poisson Distribution\n- 's' to skip (default: Uniform Distribution)\n")
-                    while not any(c in "nps" for c in distribution): # Only n or p or s
+                    distribution = input("Will " + str.upper(entity) + " values be in a specific mathematical distribution? Input:\n- 'n' for Normal Distribution\n- 's' to skip (default: Uniform Distribution)\n")
+                    while not any(c in "ns" for c in distribution): # Only n or s
                         distribution = reinput()
                     tables_dict[table_name][entity]["distribution"] = distribution
 
@@ -141,18 +141,27 @@ def main():
                         tables_dict[table_name][entity]["max"] = float(maximum)
 
                     elif distribution == 'n': # Normal Distribution of Floats
-                        mean = input("Input mean value (e.g. 0) in the Normal distribution for " + str.upper(entity) + ":\n")
-                        while not isfloat(mean): # Only float
-                            mean = reinput()
-                        sd = input("Input standard deviation value (e.g. 1) in the normal distribution for " + str.upper(entity) + ":\n")
-                        while not isfloat(sd): # Only float
-                            sd = reinput()
-                        tables_dict[table_name][entity]["mean"] = float(mean)
-                        tables_dict[table_name][entity]["sd"] = float(sd)
+                        # mean = input("Input mean value (e.g. 0) in the Normal distribution for " + str.upper(entity) + ":\n")
+                        # while not isfloat(mean): # Only float
+                        #     mean = reinput()
+                        # sd = input("Input standard deviation value (e.g. 1) in the normal distribution for " + str.upper(entity) + ":\n")
+                        # while not isfloat(sd): # Only float
+                        #     sd = reinput()
+                        # tables_dict[table_name][entity]["mean"] = float(mean)
+                        # tables_dict[table_name][entity]["sd"] = float(sd)
+                        minimum = input("What is a rough estimated minimum value allowed in the normal distribution of " + str.upper(entity) + "? (Note: This value will occur at a 0.1% probability.)\n")
+                        while not isfloat(minimum): # Only float
+                            minimum = reinput()
+                        tables_dict[table_name][entity]["min"] = float(minimum)
+                        maximum = input("What is a rough estimated maximum value allowed in the normal distribution of " + str.upper(entity) + "? (Note: This value will occur at a 0.1% probability.)\n")
+                        while not isfloat(maximum) or float(maximum) < float(minimum): # Only float
+                            maximum = reinput()
+                        tables_dict[table_name][entity]["max"] = float(maximum)
+                        input("Based on your input min and max values for " + str.upper(entity) + ", the mean will occur at a value of " + str(float(maximum)+(float(minimum)-float(maximum))/2) + ". ENTER to continue.\n")
 
-                    elif distribution == 'p': # Poisson Distribution of Floats
-                        mean = input("Input lambda mean value (e.g. 10) in the Poisson distribution for " + str.upper(entity) + ":\n")
-                        tables_dict[table_name][entity]["mean"] = float(mean)
+                    # elif distribution == 'p': # Poisson Distribution of Floats
+                    #     mean = input("Input lambda mean value (e.g. 10) in the Poisson distribution for " + str.upper(entity) + ":\n")
+                    #     tables_dict[table_name][entity]["mean"] = float(mean)
 
                 elif numeric_type == 'i' : # Uniform Distribution of Integers
                     minimum = input("What is the minimum value allowed for " + str.upper(entity) + "?\n")
@@ -307,7 +316,7 @@ def main():
                         output_dict[indiv_entity] = int_generator(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], unique=False, selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
                     elif (tables_dict[table_name][indiv_entity]["num_type"] == 'f'):
                         if (tables_dict[table_name][indiv_entity]["distribution"] == 'n'):
-                            output_dict[indiv_entity] = float_generator_normal(float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], decimals=tables_dict[table_name][indiv_entity]["decimals"]))
+                            output_dict[indiv_entity] = float_generator_normal(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
                         # elif (indiv_entity["distribution"] == 'p'):
                             # output_dict[indiv_entity] )
                         else:

@@ -299,7 +299,7 @@ def int_generator(n, min, max, exclusion=None, unique=False, selectivity=0):
     if selectivity == 0: # default selectivity = (1 / valid range size) ie all options appear at least once
 
       complete_sets, remainder = divmod(n, valid_range_size)
-      seq = complete_sets * options
+      seq = int(complete_sets) * options
 
       if remainder > 0:
         seq += list(rng.choice(options, size=remainder, replace=False))
@@ -364,8 +364,6 @@ def float_generator_uniform(n, min, max, exclusion=None, decimals=2, unique=Fals
 
 def int_generator_single(min, max, exclusion=None):
 
-# compulsory_min=False, compulsory_max=False, num_rows, distribution='uniform', decimals=2, unique=False, selectivity=0
-
   """
   min: min value of list of integers
   max: max value of list of integers
@@ -388,8 +386,6 @@ def int_generator_single(min, max, exclusion=None):
   return val
 
 def float_generator_single(min, max, distribution='uniform', exclusion=None, decimals=2):
-
-# compulsory_min=False, compulsory_max=False, num_rows, unique=False, selectivity=0
 
   """
   min: min value of list of integers
