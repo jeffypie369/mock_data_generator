@@ -279,8 +279,9 @@ def main():
                 while not num_foreign_keys.isnumeric(): # Only numbers
                     num_foreign_keys = reinput()
                 for k in range(int(num_foreign_keys)):
-                    foreign_key_table = input(f"Foreign key #{k+1}: Input the referenced foreign table:\n")
-                    foreign_key_column = input(f"Foreign key #{k+1}: Input the unique column being referenced in {foreign_key_table}\n")
+                    foreign_key_table = input(f"Foreign key #{k+1}: Input the referenced foreign table.\n")
+                    foreign_key_table = str.upper(foreign_key_table)
+                    foreign_key_column = input(f"Foreign key #{k+1}: Input the unique column being referenced in {foreign_key_table}. Please note that column name is case-sensitive.\n")
                     while (foreign_key_column not in tables_dict[foreign_key_table]["entity_list"] or tables_dict[foreign_key_table][foreign_key_column]["is_unique"] == False):
                         if (foreign_key_column not in tables_dict[foreign_key_table]["entity_list"]):
                             input("This column does not exist in the specified table. Please note that column name is case-sensitive. You will be prompted to re-enter the referenced foreign table and column. ENTER to proceed.")
