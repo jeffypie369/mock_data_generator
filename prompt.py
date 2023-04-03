@@ -458,7 +458,7 @@ def main():
 
                     # print(output_list)
             
-            output_dict = {}
+            # output_dict = {}
             output_zipped = list(zip(*output_list))
             for idx, indiv_entity in enumerate(tables_dict[table_name]["entity_list"]):
                 output_dict[indiv_entity] = list(output_zipped[idx])
