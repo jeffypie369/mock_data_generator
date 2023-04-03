@@ -3,6 +3,8 @@ import math
 import random
 import string
 import numpy as np
+import datetime
+from datetime import datetime, timedelta, time, date
 from collections import OrderedDict
 from faker import Faker
 
@@ -412,3 +414,101 @@ def float_generator_single(min, max, distribution='uniform', exclusion=None, dec
     val = round(val, decimals)
     
   return val
+
+def generate_time(lower_bound_time=[0,0,0], upper_bound_time=[23,59,59], number_of_times_to_generate=10, exclusion=None, selectivity=0):
+
+  output = set()
+  non_zero_selectivity_output = list()
+  range = 0
+
+  lower_bound_time = time(lower_bound_time[0], lower_bound_time[1], lower_bound_time[2])
+  upper_bound_time = time(upper_bound_time[0], upper_bound_time[1], upper_bound_time[2])
+  
+  if (lower_bound_time > upper_bound_time):
+    ub_time = lower_bound_time.strftime('%H:%M:%S')
+    lb_time = upper_bound_time.strftime('%H:%M:%S')
+    range = lower_bound_time.hour*60*60 + lower_bound_time.minute*60 + lower_bound_time.second - (upper_bound_time.hour*60*60 + upper_bound_time.minute*60 + upper_bound_time.second)
+  else:
+    ub_time = upper_bound_time.strftime('%H:%M:%S')
+    lb_time = lower_bound_time.strftime('%H:%M:%S')
+    range = upper_bound_time.hour*60*60 + upper_bound_time.minute*60 + upper_bound_time.second - (lower_bound_time.hour*60*60 + lower_bound_time.minute*60 + lower_bound_time.second)
+
+  
+
+  while (len(output) < number_of_times_to_generate):
+    temp = fake.time_object()
+    if (temp.strftime('%H:%M:%S') > lb_time and temp.strftime('%H:%M:%S') < ub_time):
+      output.add(temp)
+
+
+    
+
+  return output
+  
+def generate_date(lower_bound_date=datetime.today() - timedelta(days=30*365), upper_bound_date=datetime.today(), number_of_times_to_generate=10, exclusion=None, selectivity=0):
+
+  output = set()
+  non_zero_selectivity_output = list()
+  range = 0
+
+  if (type(lower_bound_date) == type(list())):
+    lower_bound_date = date(lower_bound_date[0], lower_bound_date[1], lower_bound_date[2])
+  if (type(upper_bound_date) == type(list())):
+    upper_bound_date = date(upper_bound_date[0], upper_bound_date[1], upper_bound_date[2])
+  
+  
+  if (lower_bound_date > upper_bound_date):
+    ub_date = lower_bound_date.strftime('%Y-%m-%d')
+    lb_date = upper_bound_date.strftime('%Y-%m-%d')
+    date_diff = lower_bound_date - upper_bound_date
+    range = date_diff.days
+  else:
+    ub_date = upper_bound_date.strftime('%Y-%m-%d')
+    lb_date = lower_bound_date.strftime('%Y-%m-%d')
+    date_diff = upper_bound_date - lower_bound_date
+    range = date_diff.days
+  
+
+  while (len(output) < number_of_times_to_generate):
+    temp = fake.date_between(start_date=lower_bound_date, end_date=upper_bound_date)
+    if (temp.strftime('%Y-%m-%d') > lb_date and temp.strftime('%Y-%m-%d') < ub_date):
+      output.add(temp)
+
+
+    
+
+  return output
+
+def generate_datetime(lower_bound_datetime=datetime.today() - timedelta(days=30*365), upper_bound_datetime=datetime.today(), number_of_times_to_generate=10, exclusion=None, selectivity=0):
+
+  output = set()
+  non_zero_selectivity_output = list()
+  range = 0
+
+  if (type(lower_bound_datetime) == type(list())):
+    lower_bound_datetime = datetime(lower_bound_datetime[0], lower_bound_datetime[1], lower_bound_datetime[2], hour=lower_bound_datetime[3], minute=lower_bound_datetime[4], second=lower_bound_datetime[5])
+  if (type(upper_bound_datetime) == type(list())):
+    upper_bound_datetime = datetime(upper_bound_datetime[0], upper_bound_datetime[1], upper_bound_datetime[2], hour=upper_bound_datetime[3], minute=upper_bound_datetime[4], second=upper_bound_datetime[5])
+  
+  
+  if (lower_bound_datetime > upper_bound_datetime):
+    ub_datetime = lower_bound_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    lb_datetime = lower_bound_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    date_diff = lower_bound_datetime - upper_bound_datetime
+    range = date_diff.days
+  else:
+    ub_datetime = upper_bound_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    lb_datetime = lower_bound_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    date_diff = upper_bound_datetime - lower_bound_datetime
+    range = date_diff.days
+  
+
+  while (len(output) < number_of_times_to_generate):
+    temp = fake.date_time()
+    if (temp.strftime('%Y-%m-%dT%H:%M:%S') > lb_datetime and temp.strftime('%Y-%m-%dT%H:%M:%S') < ub_datetime):
+      output.add(temp)
+
+
+    
+
+  return output
