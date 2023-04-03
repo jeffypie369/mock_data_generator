@@ -1,10 +1,11 @@
-# User Instructions
+# Instructions
 
-To run the program, navigate to the directory containing the Python files `prompt.py` and `function.py`.
+To run the program, navigate to your local directory containing the Python files `prompt.py` and `function.py`.
 Open terminal and run the following command:
 ```bash
 python prompt.py
 ```
+Generated data output will be downloaded as a CSV file in the same directory on your local machine.
 
 ## Step-by-Step Guide to Use Mock Data Generator CLI
 
@@ -22,34 +23,39 @@ python prompt.py
 12. The path splits from here depending on whether your column type is char, num or dt.
 
 ### CHARACTER Path
-12.1. If your column is one of the preset columns (postcode, card_num, isbn, id, name, address, email):
-12.1.a. Input any values you want to exclude, separated by commas. If none, input 'n'. (Conditions: Comma-separated strings or 'n')
-12.1.b. Input the maximum length of the characters. (Condition: Integer)
-12.1.c. If the type is ID, input the minimum length of the characters. (Condition: Integer)
-12.2. If your column is not one of the preset columns and you want to define a pattern, eg. CS5421:
-12.2.a. Input the desired length of the characters. (Condition: Integer)
-12.2.b. Input the desired pattern of the characters following the prompt. (Condition: String of 'l', 'd' and 'x')
-12.2.c. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings or 'n')
+12a. If your column is one of the preset columns (postcode, card_num, isbn, id, name, address, email):
+  1. Input any values you want to exclude, separated by commas. If none, input 'n'. (Conditions: Comma-separated strings or 'n')
+  2. Input the maximum length of the characters. (Condition: Integer)
+  3. If the type is ID, input the minimum length of the characters. (Condition: Integer)
+
+12b. If your column is not one of the preset columns and you want to define a pattern, eg. CS5421:
+  1. Input the desired length of the characters. (Condition: Integer)
+  2. Input the desired pattern of the characters following the prompt. (Condition: String of 'l', 'd' and 'x')
+  3. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings or 'n')
 
 ### NUMBER Path
-12.1. Input whether number is integer or float. (Condition: 'f' or 'i') If float:
-12.1.a. Input the number of desired decimal places. (Condition: Integer)
-12.1.b. Input whether the values follow a distribution (Uniform (default) or Normal or Poisson). (Condition: 's', 'n' or 'p')
-12.1.b.i. If Uniform distribution, input minimum value, then maximum value in the next input. (Condition: Float)
-12.1.b.i.a. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings of integers in defined range or 'n')
-12.1.b.ii. If Normal distribution, input whether to build based on mean & standard deviation values, or based on estimated min and max values. (Condition: '1' or '2')
-12.1.b.ii.a. If '1', input mean, then standard deviation in the next input. (Condition: Float)
-12.1.b.ii.b. If '2', input estimated minimum value, then estimated maximum value in the next input. (Condition: Float)
-12.1.b.iii. If Poisson distribution, input mean. (Condition: Float)
-12.2. If integer:
-12.2.a. Input minimum value. (Condition: Integer)
-12.2.b. Input maximum value. (Condition: Integer)
-12.2.c. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings of floats in defined range or 'n')
+12a. Input whether number is integer or float. (Condition: 'f' or 'i') If float:
+  1. Input the number of desired decimal places. (Condition: Integer)
+  2. Input whether the values follow a distribution (Uniform (default) or Normal or Poisson). (Condition: 's', 'n' or 'p')
+  3. If Uniform distribution, input minimum value, then maximum value in the next input. (Condition: Float)
+  4. If Uniform distribution, input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings of integers in defined range or 'n')
+  5. If Normal distribution, input whether to build based on mean & standard deviation values, or based on estimated min and max values. (Condition: '1' or '2')
+  6. If Normal distribution and 12a.5 input is '1', input mean, then standard deviation in the next input. (Condition: Float)
+  7. If Normal distribution and 12a.5 input is '2', input estimated minimum value, then estimated maximum value in the next input. (Condition: Float)
+  8. If Poisson distribution, input mean. (Condition: Float)
+
+12b. If integer:
+  1. Input minimum value. (Condition: Integer)
+  2. Input maximum value. (Condition: Integer)
+  3. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings of floats in defined range or 'n')
 
 ### DATETIME Path
-12.1. Input whether column contains only date, or time, or both. (Condition: 'd' or 't' or 'dt')
-12.2. Input the desired lower bound following the format provided by the prompt.
-12.3. Input the desired upper bound following the format provided by the prompt.
+12a. Input whether column contains only date, or time, or both. (Condition: 'd' or 't' or 'dt')
+
+12b. Input the desired lower bound following the format provided by the prompt.
+
+12c. Input the desired upper bound following the format provided by the prompt.
+
 
 13. Repeat steps 6 to 12 for all other columns in Table 1.
 14. If the current table is not the first table, input whether there are foreign keys. Here, it is crucial to note that you can only reference tables that have already been created prior to this table. (Condition: 'y' or 'n')
