@@ -1,5 +1,8 @@
 User Instructions
 
+To run the program, navigate to the directory where prompt.py is, open terminal and run the following command:
+python prompt.py
+
 1. Input the number of tables you need. (Condition: Integer)
 2. Input the name of Table 1. (Condition: word characters, '_' and '-' are allowed)
 3. Input the number of rows you want for Table 1. (Condition: Integer)
