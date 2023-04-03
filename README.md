@@ -1,7 +1,12 @@
-User Instructions
+# User Instructions
 
-To run the program, navigate to the directory where prompt.py is, open terminal and run the following command:
+To run the program, navigate to the directory containing the Python files `prompt.py` and `function.py`.
+Open terminal and run the following command:
+```bash
 python prompt.py
+```
+
+## Step-by-Step Guide to Use Mock Data Generator CLI
 
 1. Input the number of tables you need. (Condition: Integer)
 2. Input the name of Table 1. (Condition: word characters, '_' and '-' are allowed)
@@ -16,7 +21,7 @@ python prompt.py
 11. If step 10 is 'n' (i.e. non-unique values), input the selectivity constraint, if any. Input 0 if you do not have a selectivity constraint for this column. (Condition: 0 <= selectivity <= 1)
 12. The path splits from here depending on whether your column type is char, num or dt.
 
-(CHARACTER-path)
+### CHARACTER Path
 12.1. If your column is one of the preset columns (postcode, card_num, isbn, id, name, address, email):
 12.1.a. Input any values you want to exclude, separated by commas. If none, input 'n'. (Conditions: Comma-separated strings or 'n')
 12.1.b. Input the maximum length of the characters. (Condition: Integer)
@@ -26,7 +31,7 @@ python prompt.py
 12.2.b. Input the desired pattern of the characters following the prompt. (Condition: String of 'l', 'd' and 'x')
 12.2.c. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings or 'n')
 
-(NUMBER-path)
+### NUMBER Path
 12.1. Input whether number is integer or float. (Condition: 'f' or 'i') If float:
 12.1.a. Input the number of desired decimal places. (Condition: Integer)
 12.1.b. Input whether the values follow a distribution (Uniform (default) or Normal or Poisson). (Condition: 's', 'n' or 'p')
@@ -41,7 +46,7 @@ python prompt.py
 12.2.b. Input maximum value. (Condition: Integer)
 12.2.c. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings of floats in defined range or 'n')
 
-(DATETIME-path)
+### DATETIME Path
 12.1. Input whether column contains only date, or time, or both. (Condition: 'd' or 't' or 'dt')
 12.2. Input the desired lower bound following the format provided by the prompt.
 12.3. Input the desired upper bound following the format provided by the prompt.
