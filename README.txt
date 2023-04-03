@@ -9,8 +9,8 @@ User Instructions
 7. We support a preset number of data types that produce realistic data. These are (name, address, email, id, postcode, credit card number and ISBN). If this column is one of those data types, input the type as shown in the prompt. If not, input 'n'. (Condition: Given types in the prompt or 'n')
 8. If step 7 is 'n', input 'char' for character values, 'num' for numeric values and 'dt' for datetime values. (Condition: 'char' or 'num or 'dt')
 9. Input whether Column 1 is a primary key for Table 1. If you intend to have a composite key, input 'y' here for each of the candidate keys. (Condition: 'y' or 'n').
-10. If step 9 is 'n', input whether Column 1 is to have unique values. (Condition: 'y' or 'n')
-11. Input the selectivity constraint, if any. Input 0 if you do not have a selectivity constraint for this column. (Condition: 0 <= selectivity <= 1)
+10. If step 9 is 'n' (i.e. not primary/candidate key), input whether Column 1 is to have unique values. (Condition: 'y' or 'n')
+11. If step 10 is 'n' (i.e. non-unique values), input the selectivity constraint, if any. Input 0 if you do not have a selectivity constraint for this column. (Condition: 0 <= selectivity <= 1)
 12. The path splits from here depending on whether your column type is char, num or dt.
 
 (CHARACTER-path)
@@ -22,16 +22,22 @@ User Instructions
 12.2.a. Input the desired length of the characters. (Condition: Integer)
 12.2.b. Input the desired pattern of the characters following the prompt. (Condition: String of 'l', 'd' and 'x')
 12.2.c. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings or 'n')
+
 (NUMBER-path)
 12.1. Input whether number is integer or float. (Condition: 'f' or 'i') If float:
-12.1.a. Input whether the values follow a distribution (Normal or Uniform (default)). (Condition: 'n' or 's')
-12.1.b. Input the number of desired decimal places. (Condition: Integer)
-12.1.c. If Normal distribution, input estimated minimum value, then estimated maximum value in the next input. (Condition: Float)
-12.1.d. If Uniform distribution, input minimum value, then maximum value in the next input. (Condition: Float)
+12.1.a. Input the number of desired decimal places. (Condition: Integer)
+12.1.b. Input whether the values follow a distribution (Uniform (default) or Normal or Poisson). (Condition: 's', 'n' or 'p')
+12.1.b.i. If Uniform distribution, input minimum value, then maximum value in the next input. (Condition: Float)
+12.1.b.i.a. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings of integers in defined range or 'n')
+12.1.b.ii. If Normal distribution, input whether to build based on mean & standard deviation values, or based on estimated min and max values. (Condition: '1' or '2')
+12.1.b.ii.a. If '1', input mean, then standard deviation in the next input. (Condition: Float)
+12.1.b.ii.b. If '2', input estimated minimum value, then estimated maximum value in the next input. (Condition: Float)
+12.1.b.iii. If Poisson distribution, input mean. (Condition: Float)
 12.2. If integer:
 12.2.a. Input minimum value. (Condition: Integer)
-12.2.b. Input maximum value. (Condition: Integer or Float)
-12.2.c. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings or 'n')
+12.2.b. Input maximum value. (Condition: Integer)
+12.2.c. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings of floats in defined range or 'n')
+
 (DATETIME-path)
 12.1. Input whether column contains only date, or time, or both. (Condition: 'd' or 't' or 'dt')
 12.2. Input the desired lower bound following the format provided by the prompt.
