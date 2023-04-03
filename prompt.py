@@ -347,12 +347,12 @@ def main():
                             else:
                                 output_dict[indiv_entity] = float_generator_minmax_normal(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
                 
-                elif (indiv_entity["type"] == 'dt'):
-                    if (indiv_entity["dt_type"] == 'd'):
+                elif (tables_dict[table_name][indiv_entity]["type"] == 'dt'):
+                    if (tables_dict[table_name][indiv_entity]["dt_type"] == 'd'):
                         output_list.append(generate_date(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
-                    elif (indiv_entity["dt_type"] == 't'):
+                    elif (tables_dict[table_name][indiv_entity]["dt_type"] == 't'):
                         output_list.append(generate_time(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
-                    elif (indiv_entity["dt_type"] == 'dt'):    
+                    elif (tables_dict[table_name][indiv_entity]["dt_type"] == 'dt'):    
                         output_list.append(generate_datetime(lower_bound_time=tables_dict[table_name][indiv_entity]["min"], upper_bound_time=tables_dict[table_name][indiv_entity]["max"], number_of_times_to_generate=tables_dict[table_name]["num_rows"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"]))
             
             if i > 0 and "foreign_keys" in tables_dict[table_name]:
