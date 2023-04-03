@@ -350,7 +350,6 @@ def main():
             output_list = list()
             output_dict = {}
             entity_dict = {}
-            names_list = []
             entity_index = 0
             for entity in tables_dict[table_name]["entity_list"]:
                 entity_dict[entity] = entity_index
@@ -366,6 +365,7 @@ def main():
 
                 
             for row_index in range(int(num_rows)):
+                names_list = []
                 temp_row = list()
                 row_satisfies_fd = True
                 for indiv_entity in tables_dict[table_name]["entity_list"]:
@@ -380,7 +380,7 @@ def main():
                         data_generated = id_generator(min=tables_dict[table_name][indiv_entity]["min"], max=tables_dict[table_name][indiv_entity]["max"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], num_rows=1)
                     elif (tables_dict[table_name][indiv_entity]["type"] == 'name'):
                         data_generated = name_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=1, selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], region=tables_dict[table_name][indiv_entity]["region"])
-                        names_list.append(data_generated)
+                        names_list = data_generated
                     elif (tables_dict[table_name][indiv_entity]["type"] == 'address'):
                         data_generated = address_generator(max=tables_dict[table_name][indiv_entity]["max"], num_rows=1, selectivity=tables_dict[table_name][indiv_entity]["selectivity"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], region=tables_dict[table_name][indiv_entity]["region"])
                     elif (tables_dict[table_name][indiv_entity]["type"] == 'email'):
