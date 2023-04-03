@@ -410,24 +410,7 @@ def main():
                     
                     temp_row.append(data_generated)
                     
-                    # if i > 0 and "foreign_keys" in tables_dict[table_name]:
-                    #     fk_dict = {}
-                    #     for fk in tables_dict[table_name]["foreign_keys"]:
-                    #         fk_table = fk[0]
-                    #         fk_entity = fk[1]
-                    #         if fk_table not in fk_dict:
-                    #             fk_dict[fk_table] = []
-                    #         fk_dict[fk_table].append(fk_entity)
-                    #     for fk_table in fk_dict:
-                    #         fk_data = all_output_dict[fk_table]
-                    #         df_fk_data = pd.DataFrame(fk_data)
-                    #         df_fk_data = df_fk_data[fk_dict[fk_table]]
-                    #         fk_num_rows = int(tables_dict[fk_table]["num_rows"])
-                    #         num = randrange(fk_num_rows)
-                    #         for ent in fk_dict[fk_table]:
-                    #             if ent not in output_dict:
-                    #                 output_dict[ent] = []
-                    #             output_dict[ent].append(df_fk_data[ent][num])
+                    
 
                 temp_row_lhs = []
                 temp_row_rhs = []
@@ -450,6 +433,27 @@ def main():
 
                 if row_satisfies_fd is True:
                     output_list.append(temp_row)
+
+                    ## FYA
+                    if i > 0 and "foreign_keys" in tables_dict[table_name]:
+                        fk_dict = {}
+                        for fk in tables_dict[table_name]["foreign_keys"]:
+                            fk_table = fk[0]
+                            fk_entity = fk[1]
+                            if fk_table not in fk_dict:
+                                fk_dict[fk_table] = []
+                            fk_dict[fk_table].append(fk_entity)
+                        for fk_table in fk_dict:
+                            fk_data = all_output_dict[fk_table]
+                            df_fk_data = pd.DataFrame(fk_data)
+                            df_fk_data = df_fk_data[fk_dict[fk_table]]
+                            fk_num_rows = int(tables_dict[fk_table]["num_rows"])
+                            num = randrange(fk_num_rows)
+                            for ent in fk_dict[fk_table]:
+                                if ent not in output_dict:
+                                    output_dict[ent] = []
+                                output_dict[ent].append(df_fk_data[ent][num])
+
                     print(output_list)
                 
             # to import csv
