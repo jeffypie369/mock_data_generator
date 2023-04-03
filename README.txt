@@ -24,16 +24,14 @@ User Instructions
 12.2.c. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings or 'n')
 (NUMBER-path)
 12.1. Input whether number is integer or float. (Condition: 'f' or 'i') If float:
-12.1.a. Input whether the values follow a distribution (Normal, Poisson or Uniform (default)). (Condition: 'n' or 'p' or 's')
+12.1.a. Input whether the values follow a distribution (Normal or Uniform (default)). (Condition: 'n' or 's')
 12.1.b. Input the number of desired decimal places. (Condition: Integer)
-12.1.c. If Normal distribution, input mean value, then standard deviation in the next input. (Condition: Float)
-12.1.d. If Poisson distribution, input lambda mean value. (Condition: Float)
-12.2. If integer or uniform float distribution:
-12.2.a. Input minimum value. (Condition: Integer or Float)
-12.2.b. Input whether data includes minimum value. (Condition: 'y' or 'n')
-12.2.c. Input maximum value. (Condition: Integer or Float)
-12.2.d. Input whether data includes maximum value. (Condition: 'y' or 'n')
-12.2.e. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings or 'n')
+12.1.c. If Normal distribution, input estimated minimum value, then estimated maximum value in the next input. (Condition: Float)
+12.1.d. If Uniform distribution, input minimum value, then maximum value in the next input. (Condition: Float)
+12.2. If integer:
+12.2.a. Input minimum value. (Condition: Integer)
+12.2.b. Input maximum value. (Condition: Integer or Float)
+12.2.c. Input any values you want to exclude, separated by commas. If none, input 'n'. (Condition: Comma-separated strings or 'n')
 (DATETIME-path)
 12.1. Input whether column contains only date, or time, or both. (Condition: 'd' or 't' or 'dt')
 12.2. Input the desired lower bound following the format provided by the prompt.
@@ -41,8 +39,8 @@ User Instructions
 
 13. Repeat steps 6 to 12 for all other columns in Table 1.
 14. If the current table is not the first table, input whether there are foreign keys. Here, it is crucial to note that you can only reference tables that have already been created prior to this table. (Condition: 'y' or 'n')
-15. Input the number of foreign keys. (Condition: Integer)
-16. Input the foreign table and column in the format provided by the prompt. Here, the foreign key is case-sensitive, so make sure to enter the column name precisely. (Condition: FOREIGN_TABLE.foreign_key)
+15. Input the number of foreign keys in the current table which is the referencing table. (Condition: Integer)
+16. Input the foreign referenced table and column in the format provided by the prompt. Here, the foreign key is case-sensitive, so make sure to enter the column name precisely. (Condition: FOREIGN_TABLE.foreign_key)
 17. Input the number of functional dependencies you have for this table. (Condition: Integer). IMPORTANT: Our code is currently not optimized for this. It works but it takes a long time to generate data. We suggest starting with a small number of rows like 10 first. If you have already input a large number of rows earlier, we suggest you input 0 here and test for FD later with a smaller number of rows.
 18. Input any functional dependencies you have for this table following the prompt.
-19. Repeat steps 2 to 18 for all other tables, keeping in mind once again where foreign keys are involved, to have these tables created after the reference tables have been created.
+19. Repeat steps 2 to 18 for all other tables, keeping in mind once again where foreign keys are involved, to have these referencing tables created after the referenced tables have been created.
