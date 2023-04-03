@@ -434,18 +434,16 @@ def generate_time(lower_bound_time=[0,0,0], upper_bound_time=[23,59,59], number_
     range = upper_bound_time.hour*60*60 + upper_bound_time.minute*60 + upper_bound_time.second - (lower_bound_time.hour*60*60 + lower_bound_time.minute*60 + lower_bound_time.second)
 
   
-  if (selectivity == 0): # unique
-    while (len(output) < number_of_times_to_generate):
-      temp = fake.time_object()
-      if (temp.strftime('%H:%M:%S') > lb_time and temp.strftime('%H:%M:%S') < ub_time):
-        output.add(temp)
-  else:
-    print('uniform with non-zero selectivity')
-    # TODO: implement selectivity
+
+  while (len(output) < number_of_times_to_generate):
+    temp = fake.time_object()
+    if (temp.strftime('%H:%M:%S') > lb_time and temp.strftime('%H:%M:%S') < ub_time):
+      output.add(temp)
+
 
     
 
-  print(output)
+  return output
   
 def generate_date(lower_bound_date=datetime.today() - timedelta(days=30*365), upper_bound_date=datetime.today(), number_of_times_to_generate=10, exclusion=None, selectivity=0):
 
@@ -470,18 +468,16 @@ def generate_date(lower_bound_date=datetime.today() - timedelta(days=30*365), up
     date_diff = upper_bound_date - lower_bound_date
     range = date_diff.days
   
-  if (selectivity == 0): # unique
-    while (len(output) < number_of_times_to_generate):
-      temp = fake.date_between(start_date=lower_bound_date, end_date=upper_bound_date)
-      if (temp.strftime('%Y-%m-%d') > lb_date and temp.strftime('%Y-%m-%d') < ub_date):
-        output.add(temp)
-  else:
-    print('uniform with non-zero selectivity')
-    # TODO: implement selectivity
+
+  while (len(output) < number_of_times_to_generate):
+    temp = fake.date_between(start_date=lower_bound_date, end_date=upper_bound_date)
+    if (temp.strftime('%Y-%m-%d') > lb_date and temp.strftime('%Y-%m-%d') < ub_date):
+      output.add(temp)
+
 
     
 
-  print(output)
+  return output
 
 def generate_datetime(lower_bound_datetime=datetime.today() - timedelta(days=30*365), upper_bound_datetime=datetime.today(), number_of_times_to_generate=10, exclusion=None, selectivity=0):
 
@@ -506,15 +502,13 @@ def generate_datetime(lower_bound_datetime=datetime.today() - timedelta(days=30*
     date_diff = upper_bound_datetime - lower_bound_datetime
     range = date_diff.days
   
-  if (selectivity == 0): # unique
-    while (len(output) < number_of_times_to_generate):
-      temp = fake.date_time()
-      if (temp.strftime('%Y-%m-%dT%H:%M:%S') > lb_datetime and temp.strftime('%Y-%m-%dT%H:%M:%S') < ub_datetime):
-        output.add(temp)
-  else:
-    print('uniform with non-zero selectivity')
-    # TODO: implement selectivity
+
+  while (len(output) < number_of_times_to_generate):
+    temp = fake.date_time()
+    if (temp.strftime('%Y-%m-%dT%H:%M:%S') > lb_datetime and temp.strftime('%Y-%m-%dT%H:%M:%S') < ub_datetime):
+      output.add(temp)
+
 
     
 
-  print(output)
+  return output
