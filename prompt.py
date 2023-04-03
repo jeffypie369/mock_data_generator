@@ -339,14 +339,14 @@ def main():
                         output_dict[indiv_entity] = int_generator(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], unique=tables_dict[table_name][indiv_entity]["is_unique"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
                     elif (tables_dict[table_name][indiv_entity]["num_type"] == 'f'):
                         if (tables_dict[table_name][indiv_entity]["distribution"] == 's'):
-                            output_dict[indiv_entity] = float_generator_uniform(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"], unique=tables_dict[table_name][indiv_entity]["is_unique"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
+                            output_dict[indiv_entity] = float_generator(tables_dict[table_name]["num_rows"], decimals=tables_dict[table_name][indiv_entity]["decimals"], distribution='uniform', min=tables_dict[table_name][indiv_entity]["min"], max=tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"], unique=tables_dict[table_name][indiv_entity]["is_unique"], selectivity=tables_dict[table_name][indiv_entity]["selectivity"])
                         elif (tables_dict[table_name][indiv_entity]["distribution"] == 'p'):
-                            output_dict[indiv_entity] = float_generator_normal(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["mean"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                            output_dict[indiv_entity] = float_generator(tables_dict[table_name]["num_rows"], decimals=tables_dict[table_name][indiv_entity]["decimals"], distribution='poisson', mean=tables_dict[table_name][indiv_entity]["mean"])
                         elif (tables_dict[table_name][indiv_entity]["distribution"] == 'n'):
                             if (tables_dict[table_name][indiv_entity]["normal_approach"] == '1'):
-                                output_dict[indiv_entity] = float_generator_normal(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["mean"], tables_dict[table_name][indiv_entity]["sd"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                                output_dict[indiv_entity] = float_generator(tables_dict[table_name]["num_rows"], decimals=tables_dict[table_name][indiv_entity]["decimals"], distribution='normal', mean=tables_dict[table_name][indiv_entity]["mean"], sd=tables_dict[table_name][indiv_entity]["sd"])
                             else:
-                                output_dict[indiv_entity] = float_generator_minmax_normal(tables_dict[table_name]["num_rows"], tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                                output_dict[indiv_entity] = float_generator(tables_dict[table_name]["num_rows"], decimals=tables_dict[table_name][indiv_entity]["decimals"], distribution='normal_minmax', min=tables_dict[table_name][indiv_entity]["min"], max=tables_dict[table_name][indiv_entity]["max"])
                 
                 elif (tables_dict[table_name][indiv_entity]["type"] == 'dt'):
                     if (tables_dict[table_name][indiv_entity]["dt_type"] == 'd'):
@@ -430,14 +430,14 @@ def main():
                             data_generated = int_generator_single(tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
                         elif (tables_dict[table_name][indiv_entity]["num_type"] == 'f'):
                             if (tables_dict[table_name][indiv_entity]["distribution"] == 's'):
-                                data_generated = float_generator_single(tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], distribution='uniform', exclusion=tables_dict[table_name][indiv_entity]["exclusion"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                                data_generated = float_generator_single(decimals=tables_dict[table_name][indiv_entity]["decimals"], distribution='uniform', min=tables_dict[table_name][indiv_entity]["min"], max=tables_dict[table_name][indiv_entity]["max"], exclusion=tables_dict[table_name][indiv_entity]["exclusion"])
                             elif (tables_dict[table_name][indiv_entity]["distribution"] == 'p'):
-                                data_generated = float_generator_poisson_single(tables_dict[table_name][indiv_entity]["mean"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                                data_generated = float_generator_single(decimals=tables_dict[table_name][indiv_entity]["decimals"], distribution='poisson', mean=tables_dict[table_name][indiv_entity]["mean"])
                             elif (tables_dict[table_name][indiv_entity]["distribution"] == 'n'):
                                 if (tables_dict[table_name][indiv_entity]["normal_approach"] == '1'):
-                                    data_generated = float_generator_normal_single(tables_dict[table_name][indiv_entity]["mean"], tables_dict[table_name][indiv_entity]["sd"], decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                                    data_generated = float_generator_single(decimals=tables_dict[table_name][indiv_entity]["decimals"], distribution='normal', mean=tables_dict[table_name][indiv_entity]["mean"], sd=tables_dict[table_name][indiv_entity]["sd"])
                                 else:
-                                    data_generated = float_generator_single(tables_dict[table_name][indiv_entity]["min"], tables_dict[table_name][indiv_entity]["max"], distribution='normal', exclusion=None, decimals=tables_dict[table_name][indiv_entity]["decimals"])
+                                    data_generated = float_generator_single(decimals=tables_dict[table_name][indiv_entity]["decimals"], distribution='normal_minmax', min=tables_dict[table_name][indiv_entity]["min"], max=tables_dict[table_name][indiv_entity]["max"])
                                 
                     elif (tables_dict[table_name][indiv_entity]["type"] == 'dt'):
                         if (tables_dict[table_name][indiv_entity]["dt_type"] == 'd'):
