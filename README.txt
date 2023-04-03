@@ -47,6 +47,6 @@ User Instructions
 14. If the current table is not the first table, input whether there are foreign keys. Here, it is crucial to note that you can only reference tables that have already been created prior to this table. (Condition: 'y' or 'n')
 15. Input the number of foreign keys in the current table which is the referencing table. (Condition: Integer)
 16. Input the foreign referenced table and column in the format provided by the prompt. Here, the foreign key is case-sensitive, so make sure to enter the column name precisely.
-17. Input the number of functional dependencies you have for this table. (Condition: Integer). IMPORTANT: Our code is currently not optimized for this. It works but it takes a long time to generate data. We suggest starting with a small number of rows like 10 first. If you have already input a large number of rows earlier, we suggest you input 0 here and test for FD later with a smaller number of rows.
+17. Input the number of functional dependencies you have for this table. (Condition: Integer).
 18. Input any functional dependencies you have for this table following the prompt.
 19. Repeat steps 2 to 18 for all other tables, keeping in mind once again where foreign keys are involved, to have these referencing tables created after the referenced tables have been created.

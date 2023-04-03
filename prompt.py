@@ -450,7 +450,6 @@ def main():
                     temp_row.append(data_generated[0])
                     
                     
-
                 temp_row_lhs = []
                 temp_row_rhs = []
                 for lhs_index in lhs:
