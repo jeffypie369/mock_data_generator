@@ -1,7 +1,3 @@
-# TODO: Account for composite keys (Jeff) - Done
-# TODO: Add one more language/region for more "realistic" data. French? https://faker.readthedocs.io/en/master/locales/fr_FR.html# (Jeff) - Done
-# TODO: Add foreign key question when it is not the first table (Jeff) - Done
-
 import pandas as pd
 from random import randrange
 import re
@@ -436,7 +432,6 @@ def main():
                 if row_satisfies_fd is True:
                     output_list.append(temp_row)
 
-                    ## FYA
                     if i > 0 and "foreign_keys" in tables_dict[table_name]:
                         fk_dict = {}
                         for fk in tables_dict[table_name]["foreign_keys"]:
@@ -456,9 +451,6 @@ def main():
                                     output_dict[ent] = []
                                 output_dict[ent].append(df_fk_data[ent][num])
 
-                    # print(output_list)
-            
-            # output_dict = {}
             output_zipped = list(zip(*output_list))
             for idx, indiv_entity in enumerate(tables_dict[table_name]["entity_list"]):
                 output_dict[indiv_entity] = list(output_zipped[idx])
@@ -467,20 +459,6 @@ def main():
             output = pd.DataFrame(output_dict)
             all_output_dict[str.upper(table_name)] = output_dict
             output.to_csv(str.upper(table_name) + '_data.csv')
-                
-                
-            # to import csv
-            # myFile = open('realistic_data_generator_fd.csv', 'w')
-            # writer = csv.writer(myFile)
-            # writer.writerow(tables_dict[table_name]["entity_list"])
-            # for row in output_list:
-            #     writer.writerow(row)
-            # myFile.close()
-
-        ## ==> Determine order of column creations based on FDs
-        ## ==> Selectivity of RHS may get overridden
-
-        # Inter-table Constraints (Foreign Keys)
 
 if __name__ == "__main__":
     main()
